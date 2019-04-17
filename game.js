@@ -3,16 +3,18 @@ var shape = new Object();
 var board;
 var score;
 var pac_color;
+var pacman;
 var start_time;
 var time_elapsed;
 var interval;
 
-Start();
+window.addEventListener("load", Start, false);
+
 
 function Start() {
     board = new Array();
     score = 0;
-    pac_color = "blue";
+    pac_color = "yellow";
     var cnt = 100;
     var food_remain = 50;
     var pacman_remain = 1;
@@ -45,6 +47,7 @@ function Start() {
         board[emptyCell[0]][emptyCell[1]] = 1;
         food_remain--;
     }
+
     keysDown = {};
     addEventListener("keydown", function (e) {
         keysDown[e.code] = true;
@@ -52,7 +55,7 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
-    interval = setInterval(UpdatePosition, 250);
+    interval = setInterval(main, 100);
 }
 
 
@@ -71,26 +74,25 @@ function findRandomEmptyCell(board) {
  */
 function GetKeyPressed() {
     if (keysDown['ArrowUp']) {
+        // keysDown['ArrowUp']=false;
         return 1;
     }
     if (keysDown['ArrowDown']) {
+        // keysDown['ArrowDown']=false;
         return 2;
     }
     if (keysDown['ArrowLeft']) {
+        // keysDown['ArrowLeft']=false;
         return 3;
     }
     if (keysDown['ArrowRight']) {
+        // keysDown['ArrowRight']=false;
         return 4;
     }
 }
 
-function pr(){
-    var newObject =keysDown;
-    Object.entries(newObject).forEach(([key, value]) => {
-        console.log(key, value);
-    });
-    console.log("--------------------------------------------------------")
-}
+
+
 
 function Draw() {
     context.clearRect(0, 0, canvas.width, canvas.height); //clean board
@@ -167,3 +169,8 @@ function UpdatePosition() {
         Draw();
     }
 }
+
+function main() {
+    UpdatePosition();
+    draw();
+};
