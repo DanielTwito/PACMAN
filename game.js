@@ -55,7 +55,7 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
-    interval = setInterval(main, 100);
+    interval = setInterval(mainLoop, 100);
 }
 
 
@@ -170,7 +170,7 @@ function UpdatePosition() {
     }
 }
 
-function main() {
+function mainLoop() {
     UpdatePosition();
-    draw();
+    Draw();
 };
