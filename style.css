@@ -1,0 +1,45 @@
+
+ul {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #007fff;
+}
+
+.li {
+    float: left;
+}
+
+.li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 35px;
+    text-decoration: none;
+    font-size: 30px;
+    width: 100%
+}
+
+li a:hover:not(.active) {
+    background-color: #ffff;
+}
+
+input {
+    text-align: center;
+    size: 20px;
+}
+canvas{
+    padding-left: 50px;
+}
+.active {
+    background-color: #007fff;
+}
+
+
+#gameBoard{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
