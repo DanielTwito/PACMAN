@@ -10,7 +10,7 @@ var interval;
 
 
 
-class Charecter {
+class Character{
     constructor(x,y){
         this.x = x;
         this.y = y;
@@ -36,7 +36,7 @@ class Charecter {
 
 }
 
-class Food extends Charecter{
+class Food extends Character{
 
     constructor(x,y,color){
         super(x,y);
@@ -58,7 +58,7 @@ class Food extends Charecter{
     }
 }
 
-class Wall extends Charecter{
+class Wall extends Character{
     constructor(x,y){
         super(x, y);
     }
@@ -73,14 +73,13 @@ class Wall extends Charecter{
     }
 
 }
-class Pacman extends Charecter{
+class Pacman extends Character{
 
-    direction;
 
     constructor(x,y,color){
         super(x,y);
         this.color=color;
-
+        this.direction = "Left";
     }
 
     Draw(context) {
@@ -88,18 +87,28 @@ class Pacman extends Charecter{
         center.x = this.x * 60 + 30;
         center.y = this.y * 60 + 30;
         context.beginPath();
-        context.arc(center.x, center.y, 30, 0.15 * Math.PI, 1.85 * Math.PI); // half circle
+        if(this.direction === "Right")
+            context.arc(center.x, center.y, 30, (Math.PI / 180) * 40, (Math.PI / 180) * (320), false);
+        if(this.direction === "Left")
+            context.arc(center.x, center.y, 30, (Math.PI / 180) * 140, (Math.PI / 180) * (220), true);
+        if(this.direction === "Up")
+            context.arc(center.x, center.y, 30, (Math.PI / 180) * 240, (Math.PI / 180) * (300), true);
+        if(this.direction === "Down")
+            context.arc(center.x, center.y, 30, (Math.PI / 180) * 60, (Math.PI / 180) * (120), true);
         context.lineTo(center.x, center.y);
         context.fillStyle = this.color; //color
         context.fill();
         context.beginPath();
-        context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
+        if(this.direction === "Up" || this.direction === "Down")
+            context.arc(center.x + 17, center.y , 5, 0, 2 * Math.PI); // circle
+        else
+            context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
         context.fillStyle = "black"; //color
         context.fill();
     }
 }
 
-class Ghost extends Charecter{
+class Ghost extends Character{
     constructor(x,y){
         super(x, y);
     }
@@ -108,7 +117,7 @@ class Ghost extends Charecter{
     }
 }
 
-class Bonus extends Charecter{
+class Bonus extends Character{
     constructor(x,y){
         super(x, y);
     }
@@ -224,21 +233,25 @@ function UpdatePosition() {
     if (x === 1) {
         if (pacman.y > 0 && !(board[pacman.x][pacman.y - 1] instanceof Wall)) {
             pacman.y--;
+            pacman.direction = "Up";
         }
     }
     if (x === 2) {
         if (pacman.y < 9 && !(board[pacman.x][pacman.y + 1] instanceof Wall)) {
             pacman.y++;
+            pacman.direction = "Down";
         }
     }
     if (x === 3) {
         if (pacman.x > 0 && !(board[pacman.x-1][pacman.y] instanceof Wall)) {
             pacman.x--;
+            pacman.direction = "Left";
         }
     }
     if (x === 4) {
         if (pacman.x < 9 && !(board[pacman.x+1][pacman.y] instanceof Wall)) {
             pacman.x++;
+            pacman.direction = "Right";
         }
     }
 
