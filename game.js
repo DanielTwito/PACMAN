@@ -329,12 +329,31 @@ function Start() {
     pac_color = "yellow";
     var cnt = 100;
     var food_remain = 50;
-    var smallFood = 0.6 * food_remain;
-    var mediumFood = 0.3 * food_remain;
-    var bigFood = 0.1 * food_remain;
+    var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain]
     var pacman_remain = 1;
     var ghost = 0;
     start_time = new Date();
+
+    function fillFood(i, j) {
+        var rnd = Math.random();
+        if (rnd <= 0.6 && foodSizes[0]>0) {
+            board[i][j] = new Food(i, j, "small");
+            foodSizes[0]--;
+            return true;
+        }
+        else if (rnd > 0.6 && rnd<=0.9 && foodSizes[1]>0){
+            board[i][j] = new Food(i,j,"medium");
+            foodSizes[1]--;
+            return true;
+        }
+        else if (rnd >0.9 && foodSizes[2]>0){
+            board[i][j] = new Food(i,j,"big");
+            foodSizes[2]--;
+            return true;
+        }
+        return false;
+    }
+
     for (var i = 0; i < 10; i++) {
         board[i] = new Array();
         //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
@@ -350,20 +369,9 @@ function Start() {
                 var randomNum = Math.random();
                 if (randomNum <= 1.0 * food_remain / cnt) {
                     food_remain--;
-                    var rnd = Math.random();
-                    if (rnd <= 0.6 && smallFood>0) {
-                        board[i][j] = new Food(i, j, "small");
-                        smallFood--;
-                    }
-                    else if (rnd > 0.6 && rnd<=0.9 && mediumFood>0){
-                        board[i][j] = new Food(i,j,"medium");
-                        mediumFood--;
-                    }
-                    else if (rnd >0.9 && bigFood>0){{
-                        board[i][j] = new Food(i,j,"big");
-                        bigFood--;
-                    }
-                } else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
+                    fillFood(i,j);
+                }
+                else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
                     pacman_remain--;
                     board[i][j] = new Pacman(i,j,pac_color);
                     pacman= board[i][j];
@@ -376,8 +384,8 @@ function Start() {
     }
     while (food_remain > 0) {
         var emptyCell = findRandomEmptyCell(board);
-        board[emptyCell[0]][emptyCell[1]] = new Food(emptyCell[0], emptyCell[1], "big");
-        food_remain--;
+        if(fillFood(emptyCell[0],emptyCell[1]))
+            food_remain--;
 
     }
 
@@ -391,10 +399,6 @@ function Start() {
     interval = setInterval(mainLoop, 90);
 }
 
-function fillFood(){
-
-    }
-}
 function findRandomEmptyCell(board) {
     var i = Math.floor((Math.random() * 9) + 1);
     var j = Math.floor((Math.random() * 9) + 1);
