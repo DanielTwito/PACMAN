@@ -369,7 +369,9 @@ function Start() {
                 var randomNum = Math.random();
                 if (randomNum <= 1.0 * food_remain / cnt) {
                     food_remain--;
-                    fillFood(i,j);
+                    if(!fillFood(i,j)){
+                        board[i][j] = null;
+                    }
                 }
                 else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
                     pacman_remain--;
@@ -382,8 +384,9 @@ function Start() {
             }
         }
     }
+    var emptyCell=[0,0];
     while (food_remain > 0) {
-        var emptyCell = findRandomEmptyCell(board);
+        emptyCell = findEmptyCell(board, emptyCell[0], emptyCell[1]);
         if(fillFood(emptyCell[0],emptyCell[1]))
             food_remain--;
 
@@ -399,14 +402,24 @@ function Start() {
     interval = setInterval(mainLoop, 90);
 }
 
-function findRandomEmptyCell(board) {
-    var i = Math.floor((Math.random() * 9) + 1);
-    var j = Math.floor((Math.random() * 9) + 1);
-    while (board[i][j] !== null) {
-        i = Math.floor((Math.random() * 9) + 1);
-        j = Math.floor((Math.random() * 9) + 1);
+function findEmptyCell(board, i, k) {
+
+    for(var j=k;i<10;i++){
+        for (; j < 10; j++) {
+            if (board[i][j] === null)
+                return[i, j];
+        }
+        if (j===10)
+            j=0;
     }
-    return [i, j];
+
+    // var i = Math.floor((Math.random() * 9) + 1);
+    // var j = Math.floor((Math.random() * 9) + 1);
+    // while (board[i][j] !== null) {
+    //     i = Math.floor((Math.random() * 9) + 1);
+    //     j = Math.floor((Math.random() * 9) + 1);
+    // }
+    // return [i, j];
 }
 
 /**
@@ -435,9 +448,11 @@ function Draw() {
     lblLives.value = lives;
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
-            if(board[i][j]!==null)
+            if(board[i][j]!==null) {
+                // console.log(i +"  "+j);
                 board[i][j].Draw(context);
-    }
+            }
+        }
     }
 
 
