@@ -9,7 +9,7 @@ var time_elapsed;
 var interval;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
-
+var ghosts = [];
 
 class User{
     constructor(userName,firstName,lastName,email,date,password){
@@ -45,6 +45,10 @@ class Character{
 
 
     Draw(context){
+
+    }
+
+    isEatable(){
 
     }
 
@@ -92,6 +96,10 @@ class Food extends Character{
         context.fillStyle = "white";
         context.fillText(food[this.size].value, center.x-4,center.y+3);
     }
+
+    isEatable(){
+        return true;
+    }
 }
 
 class Wall extends Character{
@@ -106,6 +114,10 @@ class Wall extends Character{
         context.rect(center.x - 30, center.y - 30, 60, 60);
         context.fillStyle = "grey"; //color
         context.fill();
+    }
+
+    isEatable(){
+        return false;
     }
 
 }
@@ -320,6 +332,10 @@ class Ghost extends Character{
         this.x = tmp.x;
         this.y = tmp.y;
     }
+
+    isEatable(){
+        return false;
+    }
 }
 
 class Bonus extends Character {
@@ -330,6 +346,10 @@ class Bonus extends Character {
     Draw(context) {
 
     }
+
+    isEatable(){
+        return true;
+    }
 }
 
 
@@ -337,13 +357,13 @@ window.addEventListener("load", init, false);
 
 function init(){
     let welcome = document.getElementById("welcome_div");
-    let signin = document.getElementById("signIn_div");
+    let signup = document.getElementById("signup_div");
     let login = document.getElementById("login_div");
     let settings = document.getElementById("settings_div");
     let game = document.getElementById("gameBoard");
     pages={
         "welcome":welcome,
-        "signIn":signin,
+        "signup":signup,
         "login":login,
         "settings":settings,
         "gameBoard":game,
@@ -353,11 +373,11 @@ function init(){
     users["a"]=new User("a","a","a","a@a.com","1/1/99","a");
 
 
-    welcome.style.display="none"
-    signin.style.display="none"
-    login.style.display="none"
-    settings.style.display="none"
-    game.style.display="none"
+    welcome.style.display="none";
+    signup.style.display="none";
+    login.style.display="none";
+    settings.style.display="none";
+    game.style.display="none";
     showOnly("welcome");
     setUpListener();
 }
@@ -388,7 +408,7 @@ function setUpListener(){
         showOnly("settings");
     })
     document.getElementById("register").addEventListener('click',()=>{
-        showOnly("signIn");
+        showOnly("signup");
     })
 
     document.getElementById("login").addEventListener('click',()=>{
@@ -397,8 +417,8 @@ function setUpListener(){
     document.getElementById("login_btn").addEventListener('click',()=>{
         showOnly("login");
     })
-    document.getElementById("signin_btn").addEventListener('click',()=>{
-        showOnly("signIn");
+    document.getElementById("signup_btn").addEventListener('click',()=>{
+        showOnly("signup");
     })
 
     document.getElementById("login_submit").addEventListener('click',()=>{
@@ -561,6 +581,7 @@ function Start() {
             }
             else if (i%9 === 0 && j%9 === 0 && ghost<GHOSTS_NUM) {
                 board[i][j] = new Ghost(i, j, GHOSTS_COLORS[ghost], "RIGHT");
+                ghosts[ghost] = board[i][j];
                 ghost++;
             }
             else {
@@ -611,13 +632,6 @@ function findEmptyCell(board, i, k) {
             j=0;
     }
 
-    // var i = Math.floor((Math.random() * 9) + 1);
-    // var j = Math.floor((Math.random() * 9) + 1);
-    // while (board[i][j] !== null) {
-    //     i = Math.floor((Math.random() * 9) + 1);
-    //     j = Math.floor((Math.random() * 9) + 1);
-    // }
-    // return [i, j];
 }
 
 /**
