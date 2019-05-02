@@ -59,6 +59,7 @@ li a:hover:not(.active) {
 input {
     text-align: center;
     size: 20px;
+    width: 70%;
 }
 canvas{
     padding-left: 320px;
@@ -117,7 +118,7 @@ padding-left: 500px;
 
 h2 {
     text-align: center;
-    font-size: 90px;
+    font-size: 30px;
     font-weight: 600;
     text-transform: uppercase;
     display:inline-block;
@@ -136,7 +137,7 @@ h2 {
     justify-content: center;
     width: 100%;
     min-height: 100%;
-    padding-top: 230px;
+    padding-top: 30px;
 }
 
 #formContent {
@@ -166,6 +167,19 @@ h2 {
     text-align: center;
 }
 
+#settingForm{
+    border-radius: 40px 40px 40px 40px;
+    background: #fff;
+    padding: 0px;
+    width: 90%;
+    height: 90%;
+    max-width: 1000px;
+    max-height: 1000000px;
+    position: relative;
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    text-align: center;
+}
+
 #formFooter {
     background-color: #f6f6f6;
     border-top: 1px solid #dce8f1;
@@ -184,7 +198,7 @@ h2.inactive {
 }
 
 
-input[type=button], input[type=submit] {
+input[type=button], input[type=submit],input[type=range] {
     background-color: #56baed;
     border: none;
     color: white;
@@ -333,8 +347,21 @@ input[type=text]:placeholder {
     width: 100%;
 }
 
+.lbl{
+    font-size: 40px;
+    padding: 20px;
 
+}
 
+.color_btn{
+    /*display: table-cell;*/
+    /*vertical-align:middle;*/
+    /*text-align:center;*/
+    align-content: center;
+    margin: auto;
+    width: 80px;
+    padding: 20px
+}
 /* OTHERS */
 
 *:focus {

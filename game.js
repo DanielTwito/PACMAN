@@ -11,6 +11,19 @@ var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 
 
+class User{
+    constructor(userName,firstName,lastName,email,date,password){
+        this.userName=userName;
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email=email;
+        this.date=date;
+        this.password=password;
+
+    }
+
+}
+
 class Character{
     constructor(x,y){
         this.x = x;
@@ -336,9 +349,9 @@ function init(){
         "gameBoard":game,
     }
     // user data key=userName value=passwors
-    users={
-        "a":"a"
-    }
+    users={}
+    users["a"]=new User("a","a","a","a@a.com","1/1/99","a");
+
 
     welcome.style.display="none"
     signin.style.display="none"
@@ -391,6 +404,96 @@ function setUpListener(){
     document.getElementById("login_submit").addEventListener('click',()=>{
         checkUserDetails();
     })
+    document.getElementById("signIn_submit").addEventListener('click',()=>{
+        validateFields();
+        // addUser();
+    })
+
+
+
+
+}
+
+
+function validateFields() {
+    var nameReg = /^[A-Za-z]+$/;
+    var numberReg =  /^[0-9]+$/;
+    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    var userNameReg = /^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/
+    var passReg = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+    var userName = $('#userName_register').val();
+    var firstName = $('#firstName_register').val();
+    var lastName = $('#lastName_regester').val();
+    var email = $('#email_regester').val();
+    var password = $('#password_regester').val();
+    var inputVal = new Array(userName, firstName, lastName, email, password);
+
+    var inputMessage = new Array("user name", "first name", "last name", "email", "birthday","password");
+
+    $('.error').hide();
+    //check username input
+    if(inputVal[0] == ""){
+        $('#userName_register').val( 'Please enter your'  + inputMessage[0]);
+    }
+    else if(!userNameReg.test(userName)){
+        $('#userName_register').val('placeholdeer',' Letters only');
+    }
+
+
+    //check first name input
+    if(inputVal[1] == ""){
+        $('#firstName_register').val('Please enter your' + inputMessage[1]);
+    }
+    else if(!nameReg.test(firstName)){
+        $('#firstName_register').val('Letters only');
+    }
+
+
+    //check last name imput
+    if(inputVal[2] == ""){
+        $('#lastName_regester').val('Please enter your ' + inputMessage[2]);
+    }
+    else if(!nameReg.test(lastName)){
+        $('#lastName_regester').val( 'Letters only');
+    }
+
+
+    //check email
+    if(inputVal[3] == ""){
+        $('#email_regester').val('Please enter your' + inputMessage[3]);
+    }
+    else if(!emailReg.test(email)){
+        $('#email_regester').val('Please enter a valid email address');
+    }
+
+    if(inputVal[4] == ""){
+        $('#messageLabel').val('Please enter your' + inputMessage[4]);
+    }
+
+    //check password
+    if(inputVal[5] == "" ||!passReg.test(password) ){
+        $('#password_regester').val('Please enter 8 char ad least one number and one letter');
+    }
+
+
+
+}
+
+
+function addUser () {
+
+    let uname = document.getElementById("userName_register").value;
+    let firstName=document.getElementById("firstName_register").value;
+    let lastName = document.getElementById("lastName_regester").value;
+    let email = document.getElementById("email_regester").value;
+    let birthDate = document.getElementById("birthDate_regester").value;
+    let password = document.getElementById("password_regester").value;
+
+    let userObj = new User(uname,firstName,lastName,email,birthDate,password);
+    users[uname]=userObj;
+    alert("thank you!")
+    showOnly("welcome");
+    clearAllTextFiealds();
 
 }
 
@@ -399,10 +502,22 @@ function checkUserDetails() {
     let userName = document.getElementById("userName").value;
     let password = document.getElementById("password").value;
     if (userName in users) {
-        if(users[userName]=== password) {
+        if(users[userName].password === password) {
+            clearAllTextFiealds();
             showOnly("gameBoard");
         }
     }
+}
+
+function clearAllTextFiealds(){
+    document.getElementById("userName").value='';
+    document.getElementById("password").value='';
+    document.getElementById("userName_register").value='';
+    document.getElementById("firstName_register").value='';
+    document.getElementById("lastName_regester").value='';
+    document.getElementById("email_regester").value='';
+    document.getElementById("birthDate_regester").value='';
+    document.getElementById("password_regester").value='';
 }
 
 function Start() {
@@ -482,7 +597,7 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
-    interval = setInterval(mainLoop, 90);
+    interval = setInterval(mainLoop, 120);
 }
 
 function findEmptyCell(board, i, k) {

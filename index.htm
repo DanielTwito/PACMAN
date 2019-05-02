@@ -36,14 +36,14 @@
             <h2 class="inactive underlineHover"> Sign In </h2>
 
 
-            <form>
-                <input type="text"  class="fadeIn second" placeholder="username">
-                <input type="text"  class="fadeIn third"  placeholder="first name">
-                <input type="text"  class="fadeIn third"  placeholder="last name">
-                <input type="email"  class="fadeIn third"  placeholder="email">
-                <input type="date"  class="fadeIn third"  placeholder="birth Date">
-                <input type="text"  class="fadeIn third"  placeholder="password">
-                <input type="submit" class="fadeIn fourth" value="Log In">
+            <form id="registration">
+                <input type="text" id = "userName_register"  class="fadeIn second" placeholder="username">
+                <input type="text" id = "firstName_register" class="fadeIn third"  placeholder="first name">
+                <input type="text" id = "lastName_regester" class="fadeIn third"  placeholder="last name">
+                <input type="email" id="email_regester" class="fadeIn third"  placeholder="email">
+                <input type="date"  id="birthDate_regester" class="fadeIn third"  placeholder="birth Date">
+                <input type="text"  id= "password_regester" class="fadeIn third"  placeholder="password">
+                <input type="button" id="signIn_submit" class="fadeIn fourth" value="Sign In">
             </form>
 
 
@@ -60,11 +60,11 @@
             <h2 class="inactive underlineHover"> Log In </h2>
 
 
-            <div>
+            <form>
                 <input type="text" id="userName"  class="fadeIn second" name="login" placeholder="username">
                 <input type="text"  id="password" class="fadeIn third" name="login" placeholder="password">
-                <input type="submit" id="login_submit" class="fadeIn fourth" value="Log In">
-            </div>
+                <input type="button" id="login_submit" class="fadeIn fourth" value="Log In">
+            </form>
 
         </div>
     </div>
@@ -72,8 +72,35 @@
 
 <!--TODO settings screen-->
 <div id="settings_div">
+    <div class="wrapper fadeInDown">
+        <div id="settingForm">
+        <form>
+            <h2 class="inactive">Settings:</h2>
+            <input type="text" id="keyUp"  class="fadeIn second"     placeholder="choose you'e Up key">
+            <input type="text" id="keyDown"  class="fadeIn second"   placeholder="choose you'e Down key">
+            <input type="text" id="keyLeft"  class="fadeIn second"   placeholder="choose you'e Left key">
+            <input type="text" id="keyRight"  class="fadeIn second"  placeholder="choose you'e Right key">
+            <input type="text" id="ghostNumber"  class="fadeIn second" placeholder="choose Nmber of Ghost (1-3)">
+            <input type="text" id="ballNumber"  class="fadeIn second" placeholder="Number of balls">
+            <input type="text" id="game_time"  class="fadeIn second" placeholder="Time: min 60 second ">
 
 
+        <div>
+                    <h3>Ball Color</h3>
+                        <div style="display: inline-flex">
+                            <label class="lbl"> Big </label>
+                            <input type="color" id="big_color" class="fadeIn second color_btn" value="black"></br>
+                            <label class = "lbl"> Medium </label>
+                            <input type="color" id="medium_color" class="fadeIn second color_btn" value="black"></br>
+                            <label class ="lbl"> Small </label>
+                            <input type="color" id="small_color" class="fadeIn second color_btn" value="black"></br>
+                        </div>
+            <input type="button" id="random_settings" class="fadeIn fourth" value="Random">
+            <input type="button" id="save_settings" class="fadeIn fourth" value="Save">
+            </div>
+        </form>>
+        </div>
+    </div>
 </div>
 
 
@@ -99,6 +126,7 @@
 <canvas id="canvas" height="700" width="800"></canvas>
 </div>
 <script type="text/javascript" src="game.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.0.min.js"></script>
 </body>
 
 </html>
