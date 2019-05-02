@@ -13,31 +13,61 @@
         <ul>
             <li  id ="welcome" class="li"><a>Welcome</a></li>
             <li  id="register" class="li"><a>Register</a></li>
-            <li  id="signin"   class="li"><a>Sign in</a></li>
             <li  id="login"    class="li"><a>Log in</a></li>
             <li  id="settings" class="li"><a>Settings</a></li>
 
         </ul>
 </div>
 
-<!--// TODO registration-->
 <div id="welcome_div">
-    <img class="logo" src="logo.png" alt="">
         <div class="welcome_btn">
+            <img class="logo" src="logo.png" alt="" align="center">
             <p id="login_btn"><button type="button" class="btn btn-fb btn-outline-primary waves-effect">Log in</button></p>
             <p id="signin_btn"><button type="button" class="btn btn1 btn-fb btn-outline-primary waves-effect">Sign in</button></p>
         </div>
 </div>
-<!--TODO sign in form-->
+
 <!--#the register form and sign in div are the same-->
 <div id="signIn_div">
 
+    <div class="wrapper fadeInDown">
+        <div id="registerContact">
+            <!-- Tabs Titles -->
+            <h2 class="inactive underlineHover"> Sign In </h2>
+
+
+            <form>
+                <input type="text"  class="fadeIn second" placeholder="username">
+                <input type="text"  class="fadeIn third"  placeholder="first name">
+                <input type="text"  class="fadeIn third"  placeholder="last name">
+                <input type="email"  class="fadeIn third"  placeholder="email">
+                <input type="date"  class="fadeIn third"  placeholder="birth Date">
+                <input type="text"  class="fadeIn third"  placeholder="password">
+                <input type="submit" class="fadeIn fourth" value="Log In">
+            </form>
+
+
+        </div>
+    </div>
 
 </div>
 
-<!--TODO login form-->
 <div id="login_div">
 
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <!-- Tabs Titles -->
+            <h2 class="inactive underlineHover"> Log In </h2>
+
+
+            <div>
+                <input type="text" id="userName"  class="fadeIn second" name="login" placeholder="username">
+                <input type="text"  id="password" class="fadeIn third" name="login" placeholder="password">
+                <input type="submit" id="login_submit" class="fadeIn fourth" value="Log In">
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <!--TODO settings screen-->

@@ -335,7 +335,16 @@ function init(){
         "settings":settings,
         "gameBoard":game,
     }
+    // user data key=userName value=passwors
+    users={
+        "a":"a"
+    }
 
+    welcome.style.display="none"
+    signin.style.display="none"
+    login.style.display="none"
+    settings.style.display="none"
+    game.style.display="none"
     showOnly("welcome");
     setUpListener();
 }
@@ -351,6 +360,10 @@ function showOnly(div) {
             }
         }
     }
+    if(div === "gameBoard"){
+        Start();
+    }
+
 
 }
 
@@ -364,6 +377,7 @@ function setUpListener(){
     document.getElementById("register").addEventListener('click',()=>{
         showOnly("signIn");
     })
+
     document.getElementById("login").addEventListener('click',()=>{
         showOnly("login");
     })
@@ -373,6 +387,22 @@ function setUpListener(){
     document.getElementById("signin_btn").addEventListener('click',()=>{
         showOnly("signIn");
     })
+
+    document.getElementById("login_submit").addEventListener('click',()=>{
+        checkUserDetails();
+    })
+
+}
+
+function checkUserDetails() {
+
+    let userName = document.getElementById("userName").value;
+    let password = document.getElementById("password").value;
+    if (userName in users) {
+        if(users[userName]=== password) {
+            showOnly("gameBoard");
+        }
+    }
 }
 
 function Start() {
