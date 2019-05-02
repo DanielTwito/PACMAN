@@ -320,7 +320,60 @@ class Bonus extends Character {
 }
 
 
-window.addEventListener("load", Start, false);
+window.addEventListener("load", init, false);
+
+function init(){
+    let welcome = document.getElementById("welcome_div");
+    let signin = document.getElementById("signIn_div");
+    let login = document.getElementById("login_div");
+    let settings = document.getElementById("settings_div");
+    let game = document.getElementById("gameBoard");
+    pages={
+        "welcome":welcome,
+        "signIn":signin,
+        "login":login,
+        "settings":settings,
+        "gameBoard":game,
+    }
+
+    showOnly("welcome");
+    setUpListener();
+}
+
+
+function showOnly(div) {
+    if (pages.hasOwnProperty(div)) {
+        for (var key in pages) {
+            if (key === div) {
+                pages[key].style.display = 'block'
+            } else {
+                pages[key].style.display = "none"
+            }
+        }
+    }
+
+}
+
+function setUpListener(){
+    document.getElementById("welcome").addEventListener('click',()=>{
+        showOnly("welcome");
+    })
+    document.getElementById("settings").addEventListener('click',()=>{
+        showOnly("settings");
+    })
+    document.getElementById("register").addEventListener('click',()=>{
+        showOnly("signIn");
+    })
+    document.getElementById("login").addEventListener('click',()=>{
+        showOnly("login");
+    })
+    document.getElementById("login_btn").addEventListener('click',()=>{
+        showOnly("login");
+    })
+    document.getElementById("signin_btn").addEventListener('click',()=>{
+        showOnly("signIn");
+    })
+}
 
 function Start() {
     board = new Array();

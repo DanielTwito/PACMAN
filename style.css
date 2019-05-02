@@ -30,6 +30,27 @@ ul {
     font-size: 30px;
     width: 100%
 }
+.logo{
+    text-align: center;
+
+}
+
+.btn{
+    font-size: 5em;
+    font-weight: bold;
+    border-radius: 15px;
+    border: 5px solid;
+    float: right;
+}
+.btn1{
+    font-size: 5em;
+    font-weight: bold;
+    border-radius: 15px;
+    border: 5px solid;
+    float: left;
+
+}
+
 
 li a:hover:not(.active) {
     background-color: #ffff;
@@ -43,9 +64,28 @@ canvas{
     padding-left: 50px;
 }
 .active {
-    background-color: #007fff;
+    background-color: #000;
 }
 
+#welcom_button{
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+#login_btn{
+    padding-right: 350px;
+}
+#signin_btn{
+    padding-left: 200px;
+}
+
+#welcome_div{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
 
 #gameBoard{
     margin: auto;
