@@ -727,7 +727,7 @@ function mainLoop() {
 };
 
 function ghostUpdate() {
-
+    intervalGhost
     for (var i = 0; i < GHOSTS_NUM; i++) {
         var targetX = pacman.x;
         var targetY = pacman.y;
@@ -755,6 +755,7 @@ function ghostUpdate() {
                 ghosts[i].x++;
                 ghosts[i].dir = "RIGHT"
             }
+            before = board[ghosts[i].x][ghosts[i].y];
             board[ghosts[i].x][ghosts[i].y] = ghosts[i];
             board[ghostX][ghostY]=before;
 
