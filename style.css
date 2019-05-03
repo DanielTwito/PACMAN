@@ -45,7 +45,8 @@ ul {
 }
 .logo{
     text-align: center;
-
+    height: 30%;
+    width: 52%;
 }
 
 .btn{
@@ -112,10 +113,12 @@ canvas{
     padding-top: 40px;
 }
 #login_btn{
-padding-right: 40%;
+    padding-right: 36%;
+    margin-bottom: 0rem;
 }
+
 #signup_btn{
-padding-left: 30%;
+padding-left: 35%;
 }
 
 
