@@ -7,6 +7,7 @@ var pacman;
 var start_time;
 var time_elapsed;
 var interval;
+var intervalGhost;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
@@ -621,8 +622,8 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
-    interval = setInterval(mainLoop, 120);
-    intervalGhost = setInterval(ghostUpdate, 200);
+    interval = setInterval(mainLoop, 90);
+    intervalGhost = setInterval(ghostUpdate, 400);
 }
 
 function findEmptyCell(board, i, k) {
@@ -664,13 +665,26 @@ function Draw() {
     lblLives.value = lives;
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
-            if(board[i][j]!==null) {
+            if(board[i][j] instanceof Wall) {
+                    board[i][j].Draw(context);
+            }
+        }
+    }
+
+    for (var i = 0; i < 10; i++) {
+        for (var j = 0; j < 10; j++) {
+            if(board[i][j] instanceof Food) {
                 board[i][j].Draw(context);
             }
         }
     }
 
 
+    for (var i = 0; i < ghosts.length; i++) {
+                ghosts[i].Draw(context);
+    }
+
+    board[pacman.x][pacman.y].Draw(context);
 }
 
 
@@ -722,12 +736,11 @@ function UpdatePosition() {
 
 
 function mainLoop() {
-    UpdatePosition();
     Draw();
+    UpdatePosition();
 };
 
 function ghostUpdate() {
-    intervalGhost
     for (var i = 0; i < GHOSTS_NUM; i++) {
         var targetX = pacman.x;
         var targetY = pacman.y;
@@ -736,31 +749,42 @@ function ghostUpdate() {
         board[ghostX][ghostY] = before;
         var move = getPossibaleMoves(i);
         // move = getMove(i,move);
-
-
-            var x = move[Math.floor(Math.random() * move.length)];
-            if (x === "Up") {
-                ghosts[i].y--;
-                ghosts[i].dir = "UP"
-            }
-            else if (x === "Down") {
-                ghosts[i].y++;
-                ghosts[i].dir = "DOWN"
-            }
-            else if (x === "Left") {
-                ghosts[i].x--;
-                ghosts[i].dir = "LEFT"
-            }
-            else if (x === "Right") {
-                ghosts[i].x++;
-                ghosts[i].dir = "RIGHT"
-            }
-            before = board[ghosts[i].x][ghosts[i].y];
-            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
-            board[ghostX][ghostY]=before;
-
+        var x = move[Math.floor(Math.random() * move.length)];
+        if (x === "Up") {
+            ghosts[i].y--;
+            ghosts[i].dir = "UP"
+        }
+        else if (x === "Down") {
+            ghosts[i].y++;
+            ghosts[i].dir = "DOWN"
+        }
+        else if (x === "Left") {
+            ghosts[i].x--;
+            ghosts[i].dir = "LEFT"
+        }
+        else if (x === "Right") {
+            ghosts[i].x++;
+            ghosts[i].dir = "RIGHT"
+        }
+        before = board[ghosts[i].x][ghosts[i].y];
+        // board[ghosts[i].x][ghosts[i].y] = null;
+        board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+        board[ghostX][ghostY]=before;
     }
-    // Draw();
+    Draw();
+
+}
+
+function DrawGhost(){
+    for(var i =0 ; i < GHOSTS_NUM ; i ++ ){
+        ghosts[i].Draw(context);
+    }
+
+}
+
+function ghostLoop() {
+    ghostUpdate();
+    // DrawGhost();
 }
 
 function getPossibaleMoves(ghost_index) {
@@ -769,16 +793,16 @@ function getPossibaleMoves(ghost_index) {
     var ghostX = ghosts[ghost_index].x;
     var ghostY = ghosts[ghost_index].y;
     var ans =[];
-    if(  (ghostY - 1) >= 0  && (!(board[ghostX][ghostY - 1] instanceof Wall) && !(board[ghostX][ghostY - 1] instanceof Ghost)) ){
+    if(  (ghostY - 1) > 0  && (!(board[ghostX][ghostY - 1] instanceof Wall) && !(board[ghostX][ghostY - 1] instanceof Ghost)) ){
         ans.push("Up");
     }
-    if(  (ghostY + 1) <= 9  && (!(board[ghostX][ghostY + 1] instanceof Wall) && !(board[ghostX][ghostY + 1] instanceof Ghost) )  ){
+    if(  (ghostY + 1) < 9  && (!(board[ghostX][ghostY + 1] instanceof Wall) && !(board[ghostX][ghostY + 1] instanceof Ghost) )  ){
         ans.push("Down");
     }
-    if(  (ghostX - 1) >= 0  && (!(board[ghostX-1][ghostY] instanceof Wall) && !(board[ghostX-1][ghostY] instanceof Ghost)) ){
+    if(  (ghostX - 1) > 0  && (!(board[ghostX-1][ghostY] instanceof Wall) && !(board[ghostX-1][ghostY] instanceof Ghost)) ){
         ans.push("Left");
     }
-    if(  (ghostX + 1) <= 9  && (!(board[ghostX+1][ghostY] instanceof Wall) && !(board[ghostX+1][ghostY] instanceof Ghost))  ){
+    if(  (ghostX + 1) < 9  && (!(board[ghostX+1][ghostY] instanceof Wall) && !(board[ghostX+1][ghostY] instanceof Ghost))  ){
         ans.push("Right");
     }
     return ans;
