@@ -10,7 +10,6 @@ var interval;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
-
 class User{
     constructor(userName,firstName,lastName,email,date,password){
         this.userName=userName;
@@ -378,7 +377,8 @@ function init(){
     login.style.display="none";
     settings.style.display="none";
     game.style.display="none";
-    showOnly("welcome");
+    // showOnly("welcome");
+    showOnly("gameBoard");
     setUpListener();
 }
 
@@ -612,13 +612,14 @@ function Start() {
     }
 
     keysDown = {};
-        addEventListener("keydown", function (e) {
+    addEventListener("keydown", function (e) {
         keysDown[e.code] = true;
     }, false);
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
     interval = setInterval(mainLoop, 120);
+    intervalGhost = setInterval(ghostUpdate, 200);
 }
 
 function findEmptyCell(board, i, k) {
@@ -661,7 +662,6 @@ function Draw() {
     for (var i = 0; i < 10; i++) {
         for (var j = 0; j < 10; j++) {
             if(board[i][j]!==null) {
-                // console.log(i +"  "+j);
                 board[i][j].Draw(context);
             }
         }
@@ -722,3 +722,77 @@ function mainLoop() {
     UpdatePosition();
     Draw();
 };
+
+function ghostUpdate() {
+
+    for (var i = 0; i < GHOSTS_NUM; i++) {
+        var targetX = pacman.x;
+        var targetY = pacman.y;
+        var ghostX = ghosts[i].x;
+        var ghostY = ghosts[i].y;
+        board[ghostX][ghostY] = null;
+        var move = getPossibaleMoves(i);
+        // move = getMove(i,move);
+
+
+            var x = move[Math.floor(Math.random() * move.length)];
+            if (x === "Up") {
+                ghosts[i].y--;
+                ghosts[i].dir = "UP"
+            }
+            else if (x === "Down") {
+                ghosts[i].y++;
+                ghosts[i].dir = "DOWN"
+            }
+            else if (x === "Left") {
+                ghosts[i].x--;
+                ghosts[i].dir = "LEFT"
+            }
+            else if (x === "Right") {
+                ghosts[i].x++;
+                ghosts[i].dir = "RIGHT"
+            }
+            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+    }
+    // Draw();
+}
+
+function getPossibaleMoves(ghost_index) {
+    var targetX = pacman.x;
+    var targetY = pacman.y;
+    var ghostX = ghosts[ghost_index].x;
+    var ghostY = ghosts[ghost_index].y;
+    var ans =[];
+    if(  (ghostY - 1) >= 0  && (!(board[ghostX][ghostY - 1] instanceof Wall) && !(board[ghostX][ghostY - 1] instanceof Ghost)) ){
+        ans.push("Up");
+    }
+    if(  (ghostY + 1) <= 9  && (!(board[ghostX][ghostY + 1] instanceof Wall) && !(board[ghostX][ghostY + 1] instanceof Ghost) )  ){
+        ans.push("Down");
+    }
+    if(  (ghostX - 1) >= 0  && (!(board[ghostX-1][ghostY] instanceof Wall) && !(board[ghostX-1][ghostY] instanceof Ghost)) ){
+        ans.push("Left");
+    }
+    if(  (ghostX + 1) <= 9  && (!(board[ghostX+1][ghostY] instanceof Wall) && !(board[ghostX+1][ghostY] instanceof Ghost))  ){
+        ans.push("Right");
+    }
+    return ans;
+}
+
+function getMove(ghost_index,moves) {
+    var targetX = pacman.x;
+    var targetY = pacman.y;
+    var ghostX = ghosts[ghost_index].x;
+    var ghostY = ghosts[ghost_index].y;
+    var ans = [];
+    if (targetY - ghostY > 0) {
+        if ("Down" in moves) {
+            ans.push("Down");
+            return ans;
+        } else if (targetX - ghostX > 0) {
+            if ("Right" in moves) {
+                ans.push("Right");
+                return ans;
+            }
+        }
+    }
+}
