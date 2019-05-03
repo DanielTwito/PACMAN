@@ -27,6 +27,7 @@ class Character{
     constructor(x,y){
         this.x = x;
         this.y = y;
+        this.res = 45;
     }
 
     getX(){
@@ -57,17 +58,17 @@ food = {
     big: {
         color: "red",
         value: 25,
-        size: 16
+        size: 12
     },
     medium:  {
         color: "blue",
         value: 15,
-        size: 12
+        size: 9
     },
     small:  {
         color: "black",
         value: 5,
-        size: 9
+        size: 6
     }
 };
 
@@ -85,8 +86,8 @@ class Food extends Character{
 
     Draw(context) {
         var center = {};
-        center.x = this.x * 60 + 30;
-        center.y = this.y * 60 + 30;
+        center.x = this.x * this.res + 30;
+        center.y = this.y * this.res + 30;
         context.beginPath();
         context.arc(center.x, center.y,food[this.size].size, 0, 2 * Math.PI); // circle
         context.fillStyle = food[this.size].color; //color
@@ -107,10 +108,10 @@ class Wall extends Character{
     }
     Draw(context) {
         var center = {};
-        center.x = this.x * 60 + 30;
-        center.y = this.y * 60 + 30;
+        center.x = this.x * this.res + 30;
+        center.y = this.y * this.res + 30;
         context.beginPath();
-        context.rect(center.x - 30, center.y - 30, 60, 60);
+        context.rect(center.x - 20, center.y - 20, 45, 45);
         context.fillStyle = "grey"; //color
         context.fill();
     }
@@ -129,29 +130,30 @@ class Pacman extends Character{
         super(x,y);
         this.color=color;
         this.direction = "Left";
+        this.r = 20;
     }
 
     Draw(context) {
         var center = {};
-        center.x = this.x * 60 + 30;
-        center.y = this.y * 60 + 30;
+        center.x = this.x * this.res + 30;
+        center.y = this.y * this.res + 30;
         context.beginPath();
         if(this.direction === "Right")
-            context.arc(center.x, center.y, 30, (Math.PI / 180) * 40, (Math.PI / 180) * (320), false);
+            context.arc(center.x, center.y, this.r, (Math.PI / 180) * 40, (Math.PI / 180) * (320), false);
         if(this.direction === "Left")
-            context.arc(center.x, center.y, 30, (Math.PI / 180) * 140, (Math.PI / 180) * (220), true);
+            context.arc(center.x, center.y, this.r, (Math.PI / 180) * 140, (Math.PI / 180) * (220), true);
         if(this.direction === "Up")
-            context.arc(center.x, center.y, 30, (Math.PI / 180) * 240, (Math.PI / 180) * (300), true);
+            context.arc(center.x, center.y, this.r, (Math.PI / 180) * 240, (Math.PI / 180) * (300), true);
         if(this.direction === "Down")
-            context.arc(center.x, center.y, 30, (Math.PI / 180) * 60, (Math.PI / 180) * (120), true);
+            context.arc(center.x, center.y, this.r, (Math.PI / 180) * 60, (Math.PI / 180) * (120), true);
         context.lineTo(center.x, center.y);
         context.fillStyle = this.color; //color
         context.fill();
         context.beginPath();
         if(this.direction === "Up" || this.direction === "Down")
-            context.arc(center.x + 17, center.y , 5, 0, 2 * Math.PI); // circle
+            context.arc(center.x + 17, center.y , this.r/5 -1, 0, 2 * Math.PI); // circle
         else
-            context.arc(center.x + 5, center.y - 15, 5, 0, 2 * Math.PI); // circle
+            context.arc(center.x + 5, center.y - 15, this.r/5-1, 0, 2 * Math.PI); // circle
         context.fillStyle = "black"; //color
         context.fill();
     }
@@ -163,7 +165,7 @@ class Ghost extends Character{
         this.color = color;
         this.dir = direction;
         this.isWeak = false;
-        this.radius = 25;
+        this.radius = 15;
         this.isMoving = false;
         this.isBlinking = false;
         this.isDead = false;
@@ -178,8 +180,8 @@ class Ghost extends Character{
         tmp.x = this.x;
         tmp.y = this.y;
 
-        this.x = this.x*60 +30;
-        this.y = this.y*60 +30;
+        this.x = this.x*this.res +30;
+        this.y = this.y*this.res +30;
 
         if (!this.isDead) {
             // body color
