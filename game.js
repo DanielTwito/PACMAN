@@ -10,6 +10,7 @@ var interval;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
+var before = null ;
 class User{
     constructor(userName,firstName,lastName,email,date,password){
         this.userName=userName;
@@ -732,7 +733,7 @@ function ghostUpdate() {
         var targetY = pacman.y;
         var ghostX = ghosts[i].x;
         var ghostY = ghosts[i].y;
-        board[ghostX][ghostY] = null;
+        board[ghostX][ghostY] = before;
         var move = getPossibaleMoves(i);
         // move = getMove(i,move);
 
@@ -755,6 +756,8 @@ function ghostUpdate() {
                 ghosts[i].dir = "RIGHT"
             }
             board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+            board[ghostX][ghostY]=before;
+
     }
     // Draw();
 }
