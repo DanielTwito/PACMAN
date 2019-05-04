@@ -14,6 +14,11 @@ var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
 var before = [] ;
+//sounds
+var openinig_song = document.getElementById( "opening_song" );
+var eating_sound = document.getElementById( "eating_sound" );
+
+
 class User{
     constructor(userName,firstName,lastName,email,date,password){
         this.userName=userName;
@@ -406,38 +411,38 @@ function showOnly(div) {
 
 }
 
-function setUpListener(){
-    document.getElementById("welcome").addEventListener('click',()=>{
+function setUpListener() {
+    document.getElementById("welcome").addEventListener('click', () => {
         showOnly("welcome");
     })
-    document.getElementById("settings").addEventListener('click',()=>{
+    document.getElementById("settings").addEventListener('click', () => {
         showOnly("settings");
     })
-    document.getElementById("register").addEventListener('click',()=>{
+    document.getElementById("register").addEventListener('click', () => {
         showOnly("signup");
     })
 
-    document.getElementById("login").addEventListener('click',()=>{
+    document.getElementById("login").addEventListener('click', () => {
         showOnly("login");
     })
-    document.getElementById("login_btn").addEventListener('click',()=>{
+    document.getElementById("login_btn").addEventListener('click', () => {
         showOnly("login");
     })
-    document.getElementById("signup_btn").addEventListener('click',()=>{
+    document.getElementById("signup_btn").addEventListener('click', () => {
         showOnly("signup");
     })
 
-    document.getElementById("login_submit").addEventListener('click',()=>{
+    document.getElementById("login_submit").addEventListener('click', () => {
         checkUserDetails();
     })
-    document.getElementById("signIn_submit").addEventListener('click',()=>{
+    document.getElementById("signIn_submit").addEventListener('click', () => {
         validateFields();
-        // addUser();
+        addUser();
     })
-
-
-
-
+    openinig_song.addEventListener('ended', function () {
+        this.currentTime = 0;
+        this.play();
+    }, false);
 }
 
 
@@ -530,6 +535,7 @@ function checkUserDetails() {
     if (userName in users) {
         if(users[userName].password === password) {
             clearAllTextFiealds();
+            document.getElementById("user").innerHTML="welcome <u>"+users[userName].firstName+" "+users[userName].lastName+"</u>";
             showOnly("gameBoard");
         }
     }
@@ -547,6 +553,7 @@ function clearAllTextFiealds(){
 }
 
 function Start() {
+    openinig_song.play();
     board = new Array();
     score = 0;
     lives = 3;
@@ -764,6 +771,8 @@ function UpdatePosition() {
 
     if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
+        eating_sound.currentTime=0;
+        eating_sound.play();
     }
     // if (board[pacman.x][pacman.y] instanceof Ghost) {
     //     if(lives>0) {
