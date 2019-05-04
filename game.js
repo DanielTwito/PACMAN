@@ -17,6 +17,11 @@ var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
 var before = [];
 var beforeBonus = null;
+var BOARD_ROWS = 15;
+var BOARD_COLUMNS = 10;
+
+// var before = null ;
+var before = [] ;
 //sounds
 var openinig_song = document.getElementById( "opening_song" );
 var eating_sound = document.getElementById( "eating_sound" );
@@ -378,7 +383,6 @@ function init(){
     let login = document.getElementById("login_div");
     let settings = document.getElementById("settings_div");
     let game = document.getElementById("gameBoard");
-    bonos_img = document.getElementById("bonus");
     pages={
         "welcome":welcome,
         "signup":signup,
@@ -577,9 +581,9 @@ function Start() {
     score = 0;
     lives = 3;
     pac_color = "yellow";
-    var cnt = 100;
+    var cnt = BOARD_ROWS * BOARD_COLUMNS;
     var food_remain = 50;
-    var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain]
+    var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
     var pacman_remain = 1;
     var ghost = 0;
     start_time = new Date();
@@ -604,10 +608,12 @@ function Start() {
         return false;
     }
 
-    for (var i = 0; i < 10; i++) {
+
+
+    for (var i = 0; i < BOARD_ROWS; i++) {
         board[i] = new Array();
         //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
-        for (var j = 0; j < 10; j++) {
+        for (var j = 0; j < BOARD_COLUMNS; j++) {
             if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
                 board[i][j] = new Wall(i, j);
             }
@@ -635,6 +641,10 @@ function Start() {
             }
         }
     }
+    board[9][0] = null;
+    board[BOARD_ROWS-1][0] = new Ghost(BOARD_ROWS-1, 0, GHOSTS_COLORS[ghost-1], "RIGHT");
+    ghosts[ghost-1] = board[BOARD_ROWS-1][0];
+
     var emptyCell=[0,0];
     while (food_remain > 0) {
         emptyCell = findEmptyCell(board, emptyCell[0], emptyCell[1]);
@@ -690,21 +700,21 @@ function startAfetrDisqualified() {
 
 function findEmptyCell(board, i, k) {
 
-    for(var j=k;i<10;i++){
-        for (; j < 10; j++) {
+    for(var j=k;i<BOARD_ROWS;i++){
+        for (; j < BOARD_COLUMNS; j++) {
             if (board[i][j] === null)
                 return[i, j];
         }
-        if (j===10)
+        if (j===BOARD_COLUMNS)
             j=0;
     }
 
 }
 
 function findAllEmptyCell() {
-    var cells = []
-    for(var i=0;i<10;i++){
-        for (var j=0; j < 10; j++) {
+    var cells = [];
+    for(var i=0;i<BOARD_ROWS;i++){
+        for (var j=0; j < BOARD_COLUMNS; j++) {
             if (board[i][j] === null)
                 cells.push([i,j]);
         }
@@ -737,16 +747,16 @@ function Draw() {
     lblScore.value = score;
     lblTime.value = time_elapsed;
     lblLives.value = lives;
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 10; j++) {
+    for (var i = 0; i < BOARD_ROWS; i++) {
+        for (var j = 0; j < BOARD_COLUMNS; j++) {
             if(board[i][j] instanceof Wall) {
                     board[i][j].Draw(context);
             }
         }
     }
 
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 10; j++) {
+    for (var i = 0; i < BOARD_ROWS; i++) {
+        for (var j = 0; j < BOARD_COLUMNS; j++) {
             if(board[i][j] instanceof Food) {
                 board[i][j].Draw(context);
             }
@@ -773,7 +783,7 @@ function UpdatePosition() {
         }
     }
     if (x === 2) {
-        if (pacman.y < 9 && !(board[pacman.x][pacman.y + 1] instanceof Wall)) {
+        if (pacman.y < BOARD_COLUMNS-1 && !(board[pacman.x][pacman.y + 1] instanceof Wall)) {
             pacman.y++;
             pacman.direction = "Down";
         }
@@ -785,7 +795,7 @@ function UpdatePosition() {
         }
     }
     if (x === 4) {
-        if (pacman.x < 9 && !(board[pacman.x+1][pacman.y] instanceof Wall)) {
+        if (pacman.x < BOARD_ROWS-1 && !(board[pacman.x+1][pacman.y] instanceof Wall)) {
             pacman.x++;
             pacman.direction = "Right";
         }
@@ -851,9 +861,10 @@ function ghostUpdate() {
             ghosts[i].x++;
             ghosts[i].dir = "RIGHT"
         }
-        before[i]=board[ghosts[i].x][ghosts[i].y]
+        before[i]=board[ghosts[i].x][ghosts[i].y];
         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
     }
+    // Draw();
 }
 
 function getPossibaleMoves(Obj) {
