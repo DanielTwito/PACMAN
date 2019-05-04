@@ -6,6 +6,7 @@ var pac_color;
 var pacman;
 var start_time;
 var time_elapsed;
+var gameTime=60;
 var interval;
 var mainLoop_intervalTime=100;
 var intervalGhost;
@@ -16,6 +17,8 @@ var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
 var before = [];
+var ball_the_pacman_eat=0;
+var ball_on_the_board=0;
 var beforeBonus = null;
 var BOARD_ROWS = 15;
 var BOARD_COLUMNS = 10;
@@ -583,12 +586,11 @@ function Start() {
     lives = 3;
     pac_color = "yellow";
     var cnt = BOARD_ROWS * BOARD_COLUMNS;
-    var food_remain = 20;
+    var food_remain = 80;
     var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
     var pacman_remain = 1;
     var ghost = 0;
     start_time = new Date();
-
     function fillFood(i, j) {
         var rnd = Math.random();
         if (rnd <= 0.6 && foodSizes[0]>0) {
@@ -608,8 +610,6 @@ function Start() {
         }
         return false;
     }
-
-
 
     for (var i = 0; i < BOARD_ROWS; i++) {
         board[i] = new Array();
@@ -663,6 +663,12 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
+    for (let i = 0; i < BOARD_ROWS; i++) {
+        for (let j = 0; j < BOARD_COLUMNS; j++) {
+            if(board[i][j] instanceof Food)
+                ball_on_the_board++;
+        }
+    }
     interval = setInterval(mainLoop, mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
     bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
@@ -804,6 +810,7 @@ function UpdatePosition() {
 
     if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
+        ball_the_pacman_eat++;
         eating_sound.currentTime=0;
         eating_sound.play();
     }
@@ -819,7 +826,7 @@ function UpdatePosition() {
     board[pacman.x][pacman.y] = pacman;
 
     var currentTime = new Date();
-    time_elapsed = (currentTime - start_time) / 1000;
+    time_elapsed = gameTime - ((currentTime - start_time) / 1000);
     if (score >= 20 && time_elapsed <= 10) {
         pacman.color = "green";
     }
@@ -833,10 +840,22 @@ function UpdatePosition() {
 
 
 function mainLoop() {
-    Draw();
-    UpdatePosition();
+    if(time_elapsed<0.05 || ball_the_pacman_eat === ball_on_the_board){
+        finishGame()
+    }else {
+        Draw();
+        UpdatePosition();
+    }
 };
 
+function finishGame(){
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    clearInterval(interval);
+    clearInterval(intervalGhost);
+    clearInterval(bonusInterval);
+    alert("Game Over");
+
+}
 function ghostUpdate() {
     for (var i = 0; i < GHOSTS_NUM; i++) {
         var targetX = pacman.x;
