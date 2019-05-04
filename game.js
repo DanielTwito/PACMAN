@@ -583,7 +583,7 @@ function Start() {
     lives = 3;
     pac_color = "yellow";
     var cnt = BOARD_ROWS * BOARD_COLUMNS;
-    var food_remain = 50;
+    var food_remain = 20;
     var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
     var pacman_remain = 1;
     var ghost = 0;
@@ -952,6 +952,7 @@ function getMove(ghost_index,moves) {
 function bonusUpdate() {
     var move = getPossibaleMoves(bonus);
     var x = move[Math.floor(Math.random() * move.length)];
+    board[bonus.x][bonus.y]=beforeBonus;
     if (x === "Up") {
         bonus.y--;
     } else if (x === "Down") {
