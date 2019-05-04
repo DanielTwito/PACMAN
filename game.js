@@ -11,7 +11,7 @@ var intervalGhost;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
-var before = null ;
+var before = [] ;
 class User{
     constructor(userName,firstName,lastName,email,date,password){
         this.userName=userName;
@@ -622,8 +622,8 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
-    interval = setInterval(mainLoop, 90);
-    intervalGhost = setInterval(ghostUpdate, 400);
+    interval = setInterval(mainLoop, 100);
+    intervalGhost = setInterval(ghostUpdate, 300);
 }
 
 function findEmptyCell(board, i, k) {
@@ -689,6 +689,7 @@ function Draw() {
 
 
 function UpdatePosition() {
+    // clearInterval(interval);
     board[pacman.x][pacman.y] = null;
     var x = GetKeyPressed();
     if (x === 1) {
@@ -732,6 +733,7 @@ function UpdatePosition() {
     } else {
         Draw();
     }
+    // interval = setInterval(mainLoop,100);
 }
 
 
@@ -746,46 +748,31 @@ function ghostUpdate() {
         var targetY = pacman.y;
         var ghostX = ghosts[i].x;
         var ghostY = ghosts[i].y;
-        board[ghostX][ghostY] = before;
+        for (let j = 0; j < before.length; j++) {
+            board[ghostX][ghostY]=before[i];
+        }
         var move = getPossibaleMoves(i);
         // move = getMove(i,move);
         var x = move[Math.floor(Math.random() * move.length)];
         if (x === "Up") {
             ghosts[i].y--;
             ghosts[i].dir = "UP"
-        }
-        else if (x === "Down") {
+        } else if (x === "Down") {
             ghosts[i].y++;
             ghosts[i].dir = "DOWN"
-        }
-        else if (x === "Left") {
+        } else if (x === "Left") {
             ghosts[i].x--;
             ghosts[i].dir = "LEFT"
-        }
-        else if (x === "Right") {
+        } else if (x === "Right") {
             ghosts[i].x++;
             ghosts[i].dir = "RIGHT"
         }
-        before = board[ghosts[i].x][ghosts[i].y];
-        // board[ghosts[i].x][ghosts[i].y] = null;
+        before[i]=board[ghosts[i].x][ghosts[i].y]
         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
-        board[ghostX][ghostY]=before;
     }
-    Draw();
-
 }
 
-function DrawGhost(){
-    for(var i =0 ; i < GHOSTS_NUM ; i ++ ){
-        ghosts[i].Draw(context);
-    }
 
-}
-
-function ghostLoop() {
-    ghostUpdate();
-    // DrawGhost();
-}
 
 function getPossibaleMoves(ghost_index) {
     var targetX = pacman.x;
@@ -793,16 +780,16 @@ function getPossibaleMoves(ghost_index) {
     var ghostX = ghosts[ghost_index].x;
     var ghostY = ghosts[ghost_index].y;
     var ans =[];
-    if(  (ghostY - 1) > 0  && (!(board[ghostX][ghostY - 1] instanceof Wall) && !(board[ghostX][ghostY - 1] instanceof Ghost)) ){
+    if(  (ghostY - 1) > 0  && (!(board[ghostX][ghostY - 1] instanceof Wall) && !(board[ghostX][ghostY - 1] instanceof Ghost)) && !(board[ghostX][ghostY - 1] instanceof Pacman)) {
         ans.push("Up");
     }
-    if(  (ghostY + 1) < 9  && (!(board[ghostX][ghostY + 1] instanceof Wall) && !(board[ghostX][ghostY + 1] instanceof Ghost) )  ){
+    if(  (ghostY + 1) < 9  && (!(board[ghostX][ghostY + 1] instanceof Wall) && !(board[ghostX][ghostY + 1] instanceof Ghost) && !(board[ghostX][ghostY + 1] instanceof Pacman)) ) {
         ans.push("Down");
     }
-    if(  (ghostX - 1) > 0  && (!(board[ghostX-1][ghostY] instanceof Wall) && !(board[ghostX-1][ghostY] instanceof Ghost)) ){
+    if(  (ghostX - 1) > 0  && (!(board[ghostX-1][ghostY] instanceof Wall) && !(board[ghostX-1][ghostY] instanceof Ghost) && !(board[ghostX-1][ghostY] instanceof Pacman))) {
         ans.push("Left");
     }
-    if(  (ghostX + 1) < 9  && (!(board[ghostX+1][ghostY] instanceof Wall) && !(board[ghostX+1][ghostY] instanceof Ghost))  ){
+    if(  (ghostX + 1) < 9  && (!(board[ghostX+1][ghostY] instanceof Wall) && !(board[ghostX+1][ghostY] instanceof Ghost) && !(board[ghostX+1][ghostY] instanceof Pacman))  ){
         ans.push("Right");
     }
     return ans;
