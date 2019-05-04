@@ -7,7 +7,9 @@ var pacman;
 var start_time;
 var time_elapsed;
 var interval;
+var mainLoop_intervalTime=100;
 var intervalGhost;
+var ghostUpdate_intervalTime=250;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
@@ -381,8 +383,8 @@ function init(){
     login.style.display="none";
     settings.style.display="none";
     game.style.display="none";
-    // showOnly("welcome");
-    showOnly("gameBoard");
+    showOnly("welcome");
+    // showOnly("gameBoard");
     setUpListener();
 }
 
@@ -622,9 +624,40 @@ function Start() {
     addEventListener("keyup", function (e) {
         keysDown[e.code] = false;
     }, false);
-    interval = setInterval(mainLoop, 100);
-    intervalGhost = setInterval(ghostUpdate, 300);
+    interval = setInterval(mainLoop, mainLoop_intervalTime);
+    intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
 }
+
+//restart the game after disqulification
+function startAfetrDisqualified() {
+
+    score = score-10;
+    pac_color = "yellow";
+    var ghost = 0;
+    for (let j = 0; j < before.length; j++) {
+        board[ghosts[j].x][ghosts[j].y]=before[i];
+    }
+    ghosts=[];
+    for (var i = 0; i < 10; i++) {
+        for (var j = 0; j < 10; j++) {
+            if (i % 9 === 0 && j % 9 === 0 && ghost < GHOSTS_NUM) {
+                board[i][j] = new Ghost(i, j, GHOSTS_COLORS[ghost], "RIGHT");
+                ghosts[ghost] = board[i][j];
+                ghost++;
+            }
+        }
+    }
+    let empty = findAllEmptyCell();
+    let pos = empty[Math.floor(Math.random() * empty.length)];
+    board[pos[0],pos[1]]=new Pacman(pos[0],pos[1],pacman.color);
+    pacman=board[pos[0],pos[1]];
+
+
+    keysDown = {};
+    interval = setInterval(mainLoop, mainLoop_intervalTime);
+    intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
+}
+
 
 function findEmptyCell(board, i, k) {
 
@@ -636,6 +669,18 @@ function findEmptyCell(board, i, k) {
         if (j===10)
             j=0;
     }
+
+}
+
+function findAllEmptyCell() {
+    var cells = []
+    for(var i=0;i<10;i++){
+        for (var j=0; j < 10; j++) {
+            if (board[i][j] === null)
+                cells.push([i,j]);
+        }
+    }
+    return cells;
 
 }
 
@@ -689,7 +734,7 @@ function Draw() {
 
 
 function UpdatePosition() {
-    // clearInterval(interval);
+
     board[pacman.x][pacman.y] = null;
     var x = GetKeyPressed();
     if (x === 1) {
@@ -720,6 +765,15 @@ function UpdatePosition() {
     if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
     }
+    // if (board[pacman.x][pacman.y] instanceof Ghost) {
+    //     if(lives>0) {
+    //         lives--;
+    //         alert("Ohh to bad " + lives +" lives left");
+    //         clearInterval(interval);
+    //         clearInterval(intervalGhost);
+    //         startAfetrDisqualified();
+    //         UpdatePosition();
+    //     }
     board[pacman.x][pacman.y] = pacman;
 
     var currentTime = new Date();
@@ -733,7 +787,6 @@ function UpdatePosition() {
     } else {
         Draw();
     }
-    // interval = setInterval(mainLoop,100);
 }
 
 
@@ -752,7 +805,7 @@ function ghostUpdate() {
             board[ghostX][ghostY]=before[i];
         }
         var move = getPossibaleMoves(i);
-        // move = getMove(i,move);
+        // var x = getMove(i,move)[Math.floor(Math.random() * move.length)];
         var x = move[Math.floor(Math.random() * move.length)];
         if (x === "Up") {
             ghosts[i].y--;
@@ -771,8 +824,6 @@ function ghostUpdate() {
         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
     }
 }
-
-
 
 function getPossibaleMoves(ghost_index) {
     var targetX = pacman.x;
@@ -796,20 +847,65 @@ function getPossibaleMoves(ghost_index) {
 }
 
 function getMove(ghost_index,moves) {
-    var targetX = pacman.x;
-    var targetY = pacman.y;
-    var ghostX = ghosts[ghost_index].x;
-    var ghostY = ghosts[ghost_index].y;
-    var ans = [];
-    if (targetY - ghostY > 0) {
-        if ("Down" in moves) {
-            ans.push("Down");
-            return ans;
-        } else if (targetX - ghostX > 0) {
-            if ("Right" in moves) {
-                ans.push("Right");
-                return ans;
-            }
-        }
-    }
+//     var targetX = pacman.x;
+//     var targetY = pacman.y;
+//     var ghostX = ghosts[ghost_index].x;
+//     var ghostY = ghosts[ghost_index].y;
+//     var ans = [];
+//
+//     moveY = (targetY - ghostY > 0);//true- down false up /no vertical move
+//     moveX = (targetX - ghostX > 0); // true - right false - left / no horizantal move
+//     verticalMove = (targetY - ghostY === 0);// need to go left or righr
+//     horizMove = (targetX - ghostX === 0); // need to go up or down
+//
+//     if (moveX) {
+//         if ((ghostX + 1 <= 9) && !(board[ghostX + 1][ghostY] instanceof Wall)) {
+//             ans.push("right");
+//         } else if (moveY) {
+//             ans.push("Down");
+//         } else {
+//             ans.push("Up");
+//         }
+//     } else {
+//         if ((ghostX - 1 >= 0) && !(board[ghostX - 1][ghostY] instanceof Wall)) {
+//             ans.push("left");
+//         } else if (moveY) {
+//             ans.push("Down");
+//         } else {
+//             ans.push("Up");
+//
+//         }
+//     }
+//         return ans;
+//
+//         // //if the ghost is above pavman
+//         // if (targetY - ghostY > 0) {
+//         //     if (moves.includes("Down")) {
+//         //         ans.push("Down");
+//         //         // if the ghost left to the pacman
+//         //     }if (targetX - ghostX > 0) {
+//         //         if (moves.includes("Right")) {
+//         //             ans.push("Right");
+//         //             //if the ghost is right to the pacman
+//         //         } else if (targetX - ghostX < 0) {
+//         //             ans.push("Left");
+//         //
+//         //         }
+//         //     }
+//         //
+//         //     // if the pacman is above the ghost
+//         // } else if (targetY - ghostY < 0) {
+//         //     if (moves.includes("Up")) {
+//         //         ans.push("Up");
+//         //
+//         //     }if (targetX - ghostX > 0) {
+//         //         if (moves.includes("Right")) {
+//         //             ans.push("Right");
+//         //             //if the ghost is right to the pacman
+//         //         } else if (targetX - ghostX < 0) {
+//         //             ans.push("Left");
+//         //         }
+//         //     }
+//         // }
+//         // return ans;
 }
