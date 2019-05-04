@@ -25,6 +25,7 @@ var before = [] ;
 //sounds
 var openinig_song = document.getElementById( "opening_song" );
 var eating_sound = document.getElementById( "eating_sound" );
+var bonus_img = document.getElementById( "bonus" );
 
 
 class User{
@@ -653,7 +654,7 @@ function Start() {
 
     }
     emptyCell=findEmptyCell(board, emptyCell[0], emptyCell[1]);
-    board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],bonos_img);
+    board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],bonus_img);
     bonus=board[emptyCell[0]][emptyCell[1]];
     keysDown = {};
     addEventListener("keydown", function (e) {
@@ -842,9 +843,7 @@ function ghostUpdate() {
         var targetY = pacman.y;
         var ghostX = ghosts[i].x;
         var ghostY = ghosts[i].y;
-        for (let j = 0; j < before.length; j++) {
-            board[ghostX][ghostY]=before[i];
-        }
+        board[ghostX][ghostY]=before[i];
         var move = getPossibaleMoves(ghosts[i]);
         // var x = getMove(i,move)[Math.floor(Math.random() * move.length)];
         var x = move[Math.floor(Math.random() * move.length)];
