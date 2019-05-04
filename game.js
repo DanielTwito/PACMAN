@@ -10,10 +10,13 @@ var interval;
 var mainLoop_intervalTime=100;
 var intervalGhost;
 var ghostUpdate_intervalTime=250;
+var bonusInterval;
+var bonusInterval_intervalTime=300;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
-var before = [] ;
+var before = [];
+var beforeBonus = null;
 //sounds
 var openinig_song = document.getElementById( "opening_song" );
 var eating_sound = document.getElementById( "eating_sound" );
@@ -349,12 +352,16 @@ class Ghost extends Character{
 }
 
 class Bonus extends Character {
-    constructor(x, y) {
+    constructor(x, y,img) {
         super(x, y);
+        this.img=img;
     }
 
     Draw(context) {
-
+        var center = {};
+        center.x = this.x * this.res + 30;
+        center.y = this.y * this.res + 30;
+        context.drawImage(this.img,center.x - 20, center.y - 20);
     }
 
     isEatable(){
@@ -371,6 +378,7 @@ function init(){
     let login = document.getElementById("login_div");
     let settings = document.getElementById("settings_div");
     let game = document.getElementById("gameBoard");
+    bonos_img = document.getElementById("bonus");
     pages={
         "welcome":welcome,
         "signup":signup,
@@ -436,8 +444,8 @@ function setUpListener() {
         checkUserDetails();
     })
     document.getElementById("signIn_submit").addEventListener('click', () => {
-        validateFields();
-        addUser();
+        if(validateFields())
+            addUser();
     })
     openinig_song.addEventListener('ended', function () {
         this.currentTime = 0;
@@ -460,54 +468,65 @@ function validateFields() {
     var inputVal = new Array(userName, firstName, lastName, email, password);
 
     var inputMessage = new Array("user name", "first name", "last name", "email", "birthday","password");
-
+    var flag=true;
     $('.error').hide();
     //check username input
     if(inputVal[0] == ""){
         $('#userName_register').val( 'Please enter your'  + inputMessage[0]);
+        flag=false;
+
     }
     else if(!userNameReg.test(userName)){
         $('#userName_register').val('placeholdeer',' Letters only');
+        flag=false;
     }
 
 
     //check first name input
     if(inputVal[1] == ""){
         $('#firstName_register').val('Please enter your' + inputMessage[1]);
+        flag=false;
     }
     else if(!nameReg.test(firstName)){
         $('#firstName_register').val('Letters only');
+        flag=false;
     }
 
 
     //check last name imput
     if(inputVal[2] == ""){
         $('#lastName_regester').val('Please enter your ' + inputMessage[2]);
+        flag=false;
     }
     else if(!nameReg.test(lastName)){
         $('#lastName_regester').val( 'Letters only');
+        flag=false;
     }
 
 
     //check email
     if(inputVal[3] == ""){
         $('#email_regester').val('Please enter your' + inputMessage[3]);
+        flag=false;
     }
     else if(!emailReg.test(email)){
         $('#email_regester').val('Please enter a valid email address');
+        flag=false;
     }
 
     if(inputVal[4] == ""){
         $('#messageLabel').val('Please enter your' + inputMessage[4]);
+        flag=false;
     }
 
     //check password
     if(inputVal[5] == "" ||!passReg.test(password) ){
         $('#password_regester').val('Please enter 8 char ad least one number and one letter');
+        flag=false;
     }
 
 
-
+    return flag;
 }
 
 
@@ -623,7 +642,9 @@ function Start() {
             food_remain--;
 
     }
-
+    emptyCell=findEmptyCell(board, emptyCell[0], emptyCell[1]);
+    board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],bonos_img);
+    bonus=board[emptyCell[0]][emptyCell[1]];
     keysDown = {};
     addEventListener("keydown", function (e) {
         keysDown[e.code] = true;
@@ -633,6 +654,7 @@ function Start() {
     }, false);
     interval = setInterval(mainLoop, mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
+    bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
 }
 
 //restart the game after disqulification
@@ -735,7 +757,7 @@ function Draw() {
     for (var i = 0; i < ghosts.length; i++) {
                 ghosts[i].Draw(context);
     }
-
+    board[bonus.x][bonus.y].Draw(context);
     board[pacman.x][pacman.y].Draw(context);
 }
 
@@ -813,7 +835,7 @@ function ghostUpdate() {
         for (let j = 0; j < before.length; j++) {
             board[ghostX][ghostY]=before[i];
         }
-        var move = getPossibaleMoves(i);
+        var move = getPossibaleMoves(ghosts[i]);
         // var x = getMove(i,move)[Math.floor(Math.random() * move.length)];
         var x = move[Math.floor(Math.random() * move.length)];
         if (x === "Up") {
@@ -834,22 +856,20 @@ function ghostUpdate() {
     }
 }
 
-function getPossibaleMoves(ghost_index) {
-    var targetX = pacman.x;
-    var targetY = pacman.y;
-    var ghostX = ghosts[ghost_index].x;
-    var ghostY = ghosts[ghost_index].y;
+function getPossibaleMoves(Obj) {
+    var posX = Obj.x;
+    var posY = Obj.y;
     var ans =[];
-    if(  (ghostY - 1) > 0  && (!(board[ghostX][ghostY - 1] instanceof Wall) && !(board[ghostX][ghostY - 1] instanceof Ghost)) && !(board[ghostX][ghostY - 1] instanceof Pacman)) {
+    if(  (posY - 1) > 0  && (!(board[posX][posY - 1] instanceof Wall) && !(board[posX][posY - 1] instanceof Ghost)) && !(board[posX][posY - 1] instanceof Pacman)) {
         ans.push("Up");
     }
-    if(  (ghostY + 1) < 9  && (!(board[ghostX][ghostY + 1] instanceof Wall) && !(board[ghostX][ghostY + 1] instanceof Ghost) && !(board[ghostX][ghostY + 1] instanceof Pacman)) ) {
+    if(  (posY + 1) < 9  && (!(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) && !(board[posX][posY + 1] instanceof Pacman)) ) {
         ans.push("Down");
     }
-    if(  (ghostX - 1) > 0  && (!(board[ghostX-1][ghostY] instanceof Wall) && !(board[ghostX-1][ghostY] instanceof Ghost) && !(board[ghostX-1][ghostY] instanceof Pacman))) {
+    if(  (posX - 1) > 0  && (!(board[posX-1][posY] instanceof Wall) && !(board[posX-1][posY] instanceof Ghost) && !(board[posX-1][posY] instanceof Pacman))) {
         ans.push("Left");
     }
-    if(  (ghostX + 1) < 9  && (!(board[ghostX+1][ghostY] instanceof Wall) && !(board[ghostX+1][ghostY] instanceof Ghost) && !(board[ghostX+1][ghostY] instanceof Pacman))  ){
+    if(  (posX + 1) < 9  && (!(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) && !(board[posX+1][posY] instanceof Pacman))  ){
         ans.push("Right");
     }
     return ans;
@@ -917,4 +937,20 @@ function getMove(ghost_index,moves) {
 //         //     }
 //         // }
 //         // return ans;
+}
+
+function bonusUpdate() {
+    var move = getPossibaleMoves(bonus);
+    var x = move[Math.floor(Math.random() * move.length)];
+    if (x === "Up") {
+        bonus.y--;
+    } else if (x === "Down") {
+       bonus.y++;
+    } else if (x === "Left") {
+       bonus.x--;
+    } else if (x === "Right") {
+        bonus.x++;
+    }
+    beforeBonus=board[bonus.x][bonus.y]
+    board[bonus.x][bonus.y] = bonus;
 }
