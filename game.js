@@ -8,9 +8,9 @@ var start_time;
 var time_elapsed;
 var gameTime=60;
 var interval;
-var mainLoop_intervalTime=150;
+var mainLoop_intervalTime=200;
 var intervalGhost;
-var ghostUpdate_intervalTime=400;
+var ghostUpdate_intervalTime=600;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var GHOSTS_NUM = 3;
@@ -401,7 +401,7 @@ function init(){
     }
     // user data key=userName value=passwors
     users={}
-    users["a"]=new User("a","a","a","a@a.com","1/1/99","a");
+    users["a"]=new User("a","a","","a@a.com","1/1/99","a");
 
 
     welcome.style.display="none";
@@ -436,9 +436,6 @@ function setUpListener() {
     document.getElementById("welcome").addEventListener('click', () => {
         showOnly("welcome");
     })
-    document.getElementById("settings").addEventListener('click', () => {
-        showOnly("settings");
-    })
     document.getElementById("register").addEventListener('click', () => {
         showOnly("signup");
     })
@@ -452,9 +449,24 @@ function setUpListener() {
     document.getElementById("signup_btn").addEventListener('click', () => {
         showOnly("signup");
     })
+    // document.getElementById("login_submit").addEventListener('click', () => {
+    //     showOnly("gameBoard");
+    // })
 
     document.getElementById("login_submit").addEventListener('click', () => {
-        checkUserDetails();
+        if(checkUserDetails()){
+            showOnly("settings");
+            document.getElementById("save_settings").addEventListener('click',()=>{
+                updateSettings();
+                showOnly("gameBoard");
+            });
+            document.getElementById("random_settings").addEventListener('click',()=>{
+                randomSettings();
+                showOnly("gameBoard");
+            });
+
+        }
+
     })
     document.getElementById("signIn_submit").addEventListener('click', () => {
         if(validateFields())
@@ -466,7 +478,13 @@ function setUpListener() {
     }, false);
 }
 
+function updateSettings() {
 
+}
+
+function randomSettings() {
+
+}
 function validateFields() {
     var nameReg = /^[A-Za-z]+$/;
     var numberReg =  /^[0-9]+$/;
@@ -568,9 +586,11 @@ function checkUserDetails() {
         if(users[userName].password === password) {
             clearAllTextFiealds();
             document.getElementById("user").innerHTML="welcome <u>"+users[userName].firstName+" "+users[userName].lastName+"</u>";
-            showOnly("gameBoard");
+            showOnly("settings");
+            return true;
         }
     }
+    return false;
 }
 
 function clearAllTextFiealds(){
@@ -690,15 +710,33 @@ function Start() {
 
 //restart the game after disqulification
 function startAfterDisqualified() {
-
+    clearInterval(interval);
+    clearInterval(intervalGhost);
     score = score-10;
     lives--;
     pac_color = pac_color;
+
+
     for (var i = 0; i < GHOSTS_NUM; i++) {
         var ghostX = ghosts[i].x;
         var ghostY = ghosts[i].y;
-        board[ghostX][ghostY] = before[i];
+        board[ghostX][ghostY]=before[i];
     }
+
+
+
+    Draw();
+    let empty = findAllEmptyCell();
+    let pos = empty[Math.floor(Math.random() * empty.length)];
+    pacman.x=pos[0];
+    pacman.y=pos[1];
+
+
+    openinig_song.pause();
+    openinig_song.currentTime=0;
+    Draw();
+    console.log(board);
+    openinig_song.play();
 
     ghosts=[];
     var ghost=0;
@@ -712,23 +750,11 @@ function startAfterDisqualified() {
             }
         }
     }
-
-    let empty = findAllEmptyCell();
-    let pos = empty[Math.floor(Math.random() * empty.length)];
-    pacman.x=pos[0];
-    pacman.y=pos[1];
-    Draw();
-    clearInterval(interval);
-    clearInterval(intervalGhost);
-    openinig_song.pause();
-    openinig_song.currentTime=0;
-    // Draw();
-    console.log(board);
+    keysDown = {};
     alert(lives +" lives left! press enter to continue");
-    openinig_song.play();
     interval = setInterval(mainLoop,mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate,ghostUpdate_intervalTime);
-    keysDown = {};
+
 }
 
 
@@ -849,7 +875,6 @@ function UpdatePosition() {
     }
 
     if(board[pacman.x][pacman.y] instanceof Ghost){
-
         startAfterDisqualified();
         return;
     }
@@ -945,7 +970,9 @@ function ghostUpdate() {
             ghosts[i].dir = "RIGHT"
         }
         if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
+            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
             startAfterDisqualified();
+            return;
         }
         before[i]=board[ghosts[i].x][ghosts[i].y];
         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
