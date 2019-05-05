@@ -8,11 +8,11 @@ var start_time;
 var time_elapsed;
 var gameTime=60;
 var interval;
-var mainLoop_intervalTime=100;
+var mainLoop_intervalTime=150;
 var intervalGhost;
-var ghostUpdate_intervalTime=250;
+var ghostUpdate_intervalTime=400;
 var bonusInterval;
-var bonusInterval_intervalTime=300;
+var bonusInterval_intervalTime=500;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
@@ -29,6 +29,7 @@ var before = [] ;
 var openinig_song = document.getElementById( "opening_song" );
 var eating_sound = document.getElementById( "eating_sound" );
 var bonus_img = document.getElementById( "bonus" );
+var clock_img = document.getElementById( "clock" );
 
 
 class User{
@@ -373,6 +374,9 @@ class Bonus extends Character {
         context.drawImage(this.img,center.x - 20, center.y - 20);
     }
 
+    getScore(){
+        return 50;
+    }
     isEatable(){
         return true;
     }
@@ -618,7 +622,7 @@ function Start() {
             if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
                 board[i][j] = new Wall(i, j);
             }
-            else if (i%9 === 0 && j%9 === 0 && ghost<GHOSTS_NUM) {
+            else if (i%9 === 0 && j%(BOARD_COLUMNS-1) === 0 && ghost<GHOSTS_NUM) {
                 board[i][j] = new Ghost(i, j, GHOSTS_COLORS[ghost], "RIGHT");
                 ghosts[ghost] = board[i][j];
                 ghost++;
@@ -656,6 +660,11 @@ function Start() {
     emptyCell=findEmptyCell(board, emptyCell[0], emptyCell[1]);
     board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],bonus_img);
     bonus=board[emptyCell[0]][emptyCell[1]];
+
+    emptyCell=findEmptyCell(board, emptyCell[0], emptyCell[1]);
+    clock=board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],clock_img);
+
+
     keysDown = {};
     addEventListener("keydown", function (e) {
         keysDown[e.code] = true;
@@ -675,33 +684,46 @@ function Start() {
 }
 
 //restart the game after disqulification
-function startAfetrDisqualified() {
+function startAfterDisqualified() {
 
     score = score-10;
-    pac_color = "yellow";
-    var ghost = 0;
-    for (let j = 0; j < before.length; j++) {
-        board[ghosts[j].x][ghosts[j].y]=before[i];
+    lives--;
+    pac_color = pac_color;
+    for (var i = 0; i < GHOSTS_NUM; i++) {
+        var ghostX = ghosts[i].x;
+        var ghostY = ghosts[i].y;
+        board[ghostX][ghostY] = before[i];
     }
+
     ghosts=[];
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 10; j++) {
-            if (i % 9 === 0 && j % 9 === 0 && ghost < GHOSTS_NUM) {
+    var ghost=0;
+    for (var i = 0; i < BOARD_ROWS; i++) {
+        //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
+        for (var j = 0; j < BOARD_COLUMNS; j++) {
+            if (i % (BOARD_ROWS-1) === 0 &&  j%(BOARD_COLUMNS-1) === 0 && ghost < GHOSTS_NUM) {
                 board[i][j] = new Ghost(i, j, GHOSTS_COLORS[ghost], "RIGHT");
                 ghosts[ghost] = board[i][j];
                 ghost++;
             }
         }
     }
+
     let empty = findAllEmptyCell();
     let pos = empty[Math.floor(Math.random() * empty.length)];
-    board[pos[0],pos[1]]=new Pacman(pos[0],pos[1],pacman.color);
-    pacman=board[pos[0],pos[1]];
-
-
+    pacman.x=pos[0];
+    pacman.y=pos[1];
+    Draw();
+    clearInterval(interval);
+    clearInterval(intervalGhost);
+    openinig_song.pause();
+    openinig_song.currentTime=0;
+    // Draw();
+    console.log(board);
+    alert(lives +" lives left! press enter to continue");
+    openinig_song.play();
+    interval = setInterval(mainLoop,mainLoop_intervalTime);
+    intervalGhost = setInterval(ghostUpdate,ghostUpdate_intervalTime);
     keysDown = {};
-    interval = setInterval(mainLoop, mainLoop_intervalTime);
-    intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
 }
 
 
@@ -774,8 +796,15 @@ function Draw() {
     for (var i = 0; i < ghosts.length; i++) {
                 ghosts[i].Draw(context);
     }
-    board[bonus.x][bonus.y].Draw(context);
-    board[pacman.x][pacman.y].Draw(context);
+    if(bonus!==null) {
+        board[bonus.x][bonus.y].Draw(context);
+    }
+    if(clock!==null) {
+        board[clock.x][clock.y].Draw(context);
+    }
+    if(board[pacman.x][pacman.y]!==null) {
+        board[pacman.x][pacman.y].Draw(context);
+    }
 }
 
 
@@ -783,46 +812,63 @@ function UpdatePosition() {
 
     board[pacman.x][pacman.y] = null;
     var x = GetKeyPressed();
-    if (x === 1) {
-        if (pacman.y > 0 && !(board[pacman.x][pacman.y - 1] instanceof Wall)) {
+
+    switch (x) {
+        case 1:
+            if (pacman.y > 0 && !(board[pacman.x][pacman.y - 1] instanceof Wall)) {
             pacman.y--;
             pacman.direction = "Up";
-        }
-    }
-    if (x === 2) {
-        if (pacman.y < BOARD_COLUMNS-1 && !(board[pacman.x][pacman.y + 1] instanceof Wall)) {
-            pacman.y++;
-            pacman.direction = "Down";
-        }
-    }
-    if (x === 3) {
-        if (pacman.x > 0 && !(board[pacman.x-1][pacman.y] instanceof Wall)) {
-            pacman.x--;
-            pacman.direction = "Left";
-        }
-    }
-    if (x === 4) {
-        if (pacman.x < BOARD_ROWS-1 && !(board[pacman.x+1][pacman.y] instanceof Wall)) {
-            pacman.x++;
-            pacman.direction = "Right";
-        }
+            }
+            break;
+        case 2:
+            if (pacman.y < BOARD_COLUMNS-1 && !(board[pacman.x][pacman.y + 1] instanceof Wall)) {
+                pacman.y++;
+                pacman.direction = "Down";
+            }
+            break;
+        case 3:
+            if (pacman.x > 0 && !(board[pacman.x-1][pacman.y] instanceof Wall)) {
+                pacman.x--;
+                pacman.direction = "Left";
+            }
+            break;
+        case 4:
+            if (pacman.x < BOARD_ROWS-1 && !(board[pacman.x+1][pacman.y] instanceof Wall)) {
+                pacman.x++;
+                pacman.direction = "Right";
+            }
+            break;
     }
 
-    if (board[pacman.x][pacman.y] instanceof Food) {
+    if(board[pacman.x][pacman.y] instanceof Ghost){
+        startAfterDisqualified();
+    }
+    else if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
         ball_the_pacman_eat++;
         eating_sound.currentTime=0;
         eating_sound.play();
     }
-    // if (board[pacman.x][pacman.y] instanceof Ghost) {
-    //     if(lives>0) {
-    //         lives--;
-    //         alert("Ohh to bad " + lives +" lives left");
-    //         clearInterval(interval);
-    //         clearInterval(intervalGhost);
-    //         startAfetrDisqualified();
-    //         UpdatePosition();
-    //     }
+
+    else if(board[pacman.x][pacman.y] instanceof Bonus) {
+        if (board[pacman.x][pacman.y] === clock) {
+            gameTime = gameTime + 10;
+            clock = null;
+
+        } else {
+            score += board[pacman.x][pacman.y].getScore();
+            bonus = null;
+            clearInterval(bonusInterval)
+        }
+        eating_sound.currentTime = 0;
+        eating_sound.play();
+    }
+    for (let i = 0; i < ghosts.length; i++) {
+        if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
+            startAfterDisqualified();
+        }
+    }
+
     board[pacman.x][pacman.y] = pacman;
 
     var currentTime = new Date();
@@ -840,15 +886,20 @@ function UpdatePosition() {
 
 
 function mainLoop() {
-    if(time_elapsed<0.05 || ball_the_pacman_eat === ball_on_the_board){
-        finishGame()
+    if(isGameOver()){
+        finishGame();
     }else {
         Draw();
         UpdatePosition();
     }
-};
+}
+
+function isGameOver() {
+    return time_elapsed<0.05 || ball_the_pacman_eat === ball_on_the_board || lives === 0;
+}
 
 function finishGame(){
+    openinig_song.pause();
     context.clearRect(0, 0, canvas.width, canvas.height);
     clearInterval(interval);
     clearInterval(intervalGhost);
@@ -858,8 +909,6 @@ function finishGame(){
 }
 function ghostUpdate() {
     for (var i = 0; i < GHOSTS_NUM; i++) {
-        var targetX = pacman.x;
-        var targetY = pacman.y;
         var ghostX = ghosts[i].x;
         var ghostY = ghosts[i].y;
         board[ghostX][ghostY]=before[i];
@@ -879,6 +928,9 @@ function ghostUpdate() {
             ghosts[i].x++;
             ghosts[i].dir = "RIGHT"
         }
+        if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
+            startAfterDisqualified();
+        }
         before[i]=board[ghosts[i].x][ghosts[i].y];
         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
     }
@@ -889,16 +941,16 @@ function getPossibaleMoves(Obj) {
     var posX = Obj.x;
     var posY = Obj.y;
     var ans =[];
-    if(  (posY - 1) > 0  && (!(board[posX][posY - 1] instanceof Wall) && !(board[posX][posY - 1] instanceof Ghost)) && !(board[posX][posY - 1] instanceof Pacman)) {
+    if(  (posY - 1) > 0  && !(board[posX][posY - 1] instanceof Wall) && !(board[posX][posY - 1] instanceof Ghost)) {
         ans.push("Up");
     }
-    if(  (posY + 1) < 9  && (!(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) && !(board[posX][posY + 1] instanceof Pacman)) ) {
+    if(  (posY + 1) < 9  && !(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) )  {
         ans.push("Down");
     }
-    if(  (posX - 1) > 0  && (!(board[posX-1][posY] instanceof Wall) && !(board[posX-1][posY] instanceof Ghost) && !(board[posX-1][posY] instanceof Pacman))) {
+    if(  (posX - 1) > 0  && !(board[posX-1][posY] instanceof Wall) && !(board[posX-1][posY] instanceof Ghost) ) {
         ans.push("Left");
     }
-    if(  (posX + 1) < 9  && (!(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) && !(board[posX+1][posY] instanceof Pacman))  ){
+    if(  (posX + 1) < 9  && !(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) ){
         ans.push("Right");
     }
     return ans;
