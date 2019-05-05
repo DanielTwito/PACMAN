@@ -849,7 +849,9 @@ function UpdatePosition() {
     }
 
     if(board[pacman.x][pacman.y] instanceof Ghost){
+
         startAfterDisqualified();
+        return;
     }
     else if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
@@ -878,6 +880,7 @@ function UpdatePosition() {
     for (let i = 0; i < ghosts.length; i++) {
         if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
             startAfterDisqualified();
+            return;
         }
     }
 
@@ -891,9 +894,10 @@ function UpdatePosition() {
     if (score === 5000) {
         window.clearInterval(interval);
         window.alert("Game completed");
-    } else {
-        Draw();
     }
+    // else {
+    //     Draw();
+    // }
 }
 
 
