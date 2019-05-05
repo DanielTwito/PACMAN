@@ -7,8 +7,18 @@ body{
     width: 100%;
     height: 100%;
 }
-
-
+footer{
+    position:fixed;
+    left:0;
+    font-size: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    color: white;
+    bottom:0;
+    height:30px;
+    width:100%;
+    background:#007fff;
+}
 
 .h3, h3{
     margin-bottom: .5rem;
@@ -65,7 +75,9 @@ ul {
 
 }
 
-
+a{
+    font-weight: bold;
+}
 li a:hover:not(.active) {
     background-color: #ffff;
 }
@@ -99,7 +111,7 @@ canvas{
     align-content: center;
     margin: auto;
     width: 80%;
-    padding-top: 100px;
+    padding-top: 40px;
 }
 
 

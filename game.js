@@ -8,7 +8,7 @@ var start_time;
 var time_elapsed;
 var gameTime=60;
 var interval;
-var mainLoop_intervalTime=200;
+var mainLoop_intervalTime=150;
 var intervalGhost;
 var ghostUpdate_intervalTime=600;
 var bonusInterval;
