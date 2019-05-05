@@ -30,6 +30,7 @@ var openinig_song = document.getElementById( "opening_song" );
 var eating_sound = document.getElementById( "eating_sound" );
 var bonus_img = document.getElementById( "bonus" );
 var clock_img = document.getElementById( "clock" );
+var extra_life_img = document.getElementById( "extra_life" );
 
 
 class User{
@@ -661,9 +662,13 @@ function Start() {
     board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],bonus_img);
     bonus=board[emptyCell[0]][emptyCell[1]];
 
-    emptyCell=findEmptyCell(board, emptyCell[0], emptyCell[1]);
+    emptyCell=findAllEmptyCell();
+    emptyCell = emptyCell[Math.floor(Math.random() * emptyCell.length)];
     clock=board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],clock_img);
 
+    emptyCell=findAllEmptyCell();
+    emptyCell = emptyCell[Math.floor(Math.random() * emptyCell.length)];
+    extra_life=board[emptyCell[0]][emptyCell[1]]=new Bonus(emptyCell[0],emptyCell[1],extra_life_img);
 
     keysDown = {};
     addEventListener("keydown", function (e) {
@@ -802,6 +807,9 @@ function Draw() {
     if(clock!==null) {
         board[clock.x][clock.y].Draw(context);
     }
+    if(extra_life!==null) {
+        board[extra_life.x][extra_life.y].Draw(context);
+    }
     if(board[pacman.x][pacman.y]!==null) {
         board[pacman.x][pacman.y].Draw(context);
     }
@@ -855,10 +863,14 @@ function UpdatePosition() {
             gameTime = gameTime + 10;
             clock = null;
 
-        } else {
+        }else if(board[pacman.x][pacman.y] === extra_life){
+            lives++;
+            extra_life=null;
+        }
+        else {
             score += board[pacman.x][pacman.y].getScore();
-            bonus = null;
             clearInterval(bonusInterval)
+            bonus = null;
         }
         eating_sound.currentTime = 0;
         eating_sound.play();
