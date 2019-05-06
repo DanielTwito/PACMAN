@@ -768,8 +768,7 @@ function Start() {
     var food_remain = BALLS_NUM;
     var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
     var sum = foodSizes[0]+foodSizes[1]+foodSizes[2];
-    if(sum<food_remain)
-        foodSizes[2]+= food_remain - sum;
+    foodSizes[0]+= food_remain - sum;
     var pacman_remain = 1;
     var ghost = 0;
     start_time = new Date();
@@ -814,6 +813,7 @@ function Start() {
                     food_remain--;
                     if(!fillFood(i,j)){
                         board[i][j] = null;
+                        food_remain++;
                     }
                 }
                 else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
@@ -868,6 +868,19 @@ function Start() {
     bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
 }
 
+function boardClean() {
+
+
+    for (let i = 0; i < BOARD_ROWS; i++) {
+        for (let j = 0; j < BOARD_COLUMNS; j++) {
+            if(board[i][j] instanceof Ghost){
+                board[i][j] = null;
+            }
+        }
+
+    }
+}
+
 //restart the game after disqulification
 function startAfterDisqualified() {
     clearInterval(interval);
@@ -880,10 +893,9 @@ function startAfterDisqualified() {
         var ghostY = ghosts[i].y;
         board[ghostX][ghostY] = before[i];
     }
-    clearInterval(interval);
-    clearInterval(intervalGhost);
     Draw();
     alert(lives +" lives left! press enter to continue");
+    boardClean();
     ghosts=[];
     var ghost=0;
     for (var i = 0; i < BOARD_ROWS; i++) {
@@ -906,11 +918,9 @@ function startAfterDisqualified() {
 
     openinig_song.pause();
     openinig_song.currentTime=0;
-    // Draw();
     console.log(board);
     openinig_song.play();
     keysDown = {};
-    alert(lives +" lives left! press enter to continue");
     interval = setInterval(mainLoop,mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate,ghostUpdate_intervalTime);
 
@@ -995,8 +1005,9 @@ function Draw() {
     if(extra_life!==null) {
         board[extra_life.x][extra_life.y].Draw(context);
     }
-    if(board[pacman.x][pacman.y]!==null) {
-        board[pacman.x][pacman.y].Draw(context);
+    if(pacman !== null)
+        if(board[pacman.x][pacman.y]!==null) {
+            board[pacman.x][pacman.y].Draw(context);
     }
 }
 
@@ -1062,13 +1073,14 @@ function UpdatePosition() {
         eating_sound.currentTime = 0;
         eating_sound.play();
     }
-    // for (let i = 0; i < ghosts.length; i++) {
-    //     if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
-    //         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
-    //         startAfterDisqualified();
-    //         return;
-    //     }
-    // }
+    for (let i = 0; i < ghosts.length; i++) {
+        if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
+            board[pacman.x][pacman.y] = null;
+            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+            startAfterDisqualified();
+            return;
+        }
+    }
 
     board[pacman.x][pacman.y] = pacman;
 
@@ -1142,11 +1154,12 @@ function ghostUpdate() {
             ghosts[i].x++;
             ghosts[i].dir = "RIGHT"
         }
-        if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
-            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
-            startAfterDisqualified();
-            return;
-        }
+        // if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
+        //     board[pacman.x][pacman.y] = null;
+        //     board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+        //     startAfterDisqualified();
+        //     return;
+        // }
         before[i]=board[ghosts[i].x][ghosts[i].y];
         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
     }
