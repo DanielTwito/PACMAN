@@ -978,13 +978,15 @@ function GetKeyPressed() {
 
 function Draw() {
     context.clearRect(0, 0, canvas.width, canvas.height); //clean board
+
+
     lblScore.value = score;
     lblTime.value = time_elapsed;
     lblLives.value = lives;
     for (var i = 0; i < BOARD_ROWS; i++) {
         for (var j = 0; j < BOARD_COLUMNS; j++) {
             if(board[i][j] instanceof Wall) {
-                    board[i][j].Draw(context);
+                board[i][j].Draw(context);
             }
         }
     }
@@ -999,7 +1001,7 @@ function Draw() {
 
 
     for (var i = 0; i < ghosts.length; i++) {
-                ghosts[i].Draw(context);
+        ghosts[i].Draw(context);
     }
     if(bonus!==null) {
         board[bonus.x][bonus.y].Draw(context);
@@ -1013,7 +1015,9 @@ function Draw() {
     if(pacman !== null)
         if(board[pacman.x][pacman.y]!==null) {
             board[pacman.x][pacman.y].Draw(context);
-    }
+        }
+    context.rect(0, 0, 700, 465);
+    context.stroke();
 }
 
 
@@ -1025,8 +1029,8 @@ function UpdatePosition() {
     switch (x) {
         case 1:
             if (pacman.y > 0 && !(board[pacman.x][pacman.y - 1] instanceof Wall)) {
-            pacman.y--;
-            pacman.direction = "Up";
+                pacman.y--;
+                pacman.direction = "Up";
             }
             break;
         case 2:
@@ -1133,7 +1137,7 @@ function finishGame(){
         alert("You Lost!");
     } else if ( time_elapsed <0.05){
         if(score<150){
-           alert("You can do better then " + score+" points!");
+            alert("You can do better then " + score+" points!");
         }else{
             alert("We have a Winner!!!" );
         }
@@ -1251,9 +1255,9 @@ function bonusUpdate() {
     if (x === "Up") {
         bonus.y--;
     } else if (x === "Down") {
-       bonus.y++;
+        bonus.y++;
     } else if (x === "Left") {
-       bonus.x--;
+        bonus.x--;
     } else if (x === "Right") {
         bonus.x++;
     }
@@ -1270,7 +1274,7 @@ function isDisqulified() {
 
     for (let i = 0; i < ghosts.length; i++) {
         // if (ghosts[i].x === pacman.x && ghosts[i].y === pacman.y) {
-            if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
+        if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
             board[pacman.x][pacman.y] = null;
             board[ghosts[i].x][ghosts[i].y] = ghosts[i];
             startAfterDisqualified();
