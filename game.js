@@ -10,7 +10,7 @@ var GAME_TIME=60;
 var interval;
 var mainLoop_intervalTime=150;
 var intervalGhost;
-var ghostUpdate_intervalTime=2500;
+var ghostUpdate_intervalTime=360;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var GHOSTS_NUM = 3;
@@ -760,6 +760,8 @@ function clearAllTextFiealds(){
 
 function Start() {
     openinig_song.play();
+    ball_the_pacman_eat=0;
+    balls_on_the_board=0;
     board = new Array();
     score = 0;
     lives = 3;
@@ -815,21 +817,22 @@ function Start() {
                         board[i][j] = null;
                         food_remain++;
                     }
-                }
-                else if (randomNum < 1.0 * (pacman_remain + food_remain) / cnt) {
-                    pacman_remain--;
-                    board[i][j] = new Pacman(i,j,pac_color);
-                    pacman= board[i][j];
-                } else {
+                }else {
                     board[i][j] = null;
                 }
                 cnt--;
             }
         }
     }
-    board[9][0] = null;
-    board[BOARD_ROWS-1][0] = new Ghost(BOARD_ROWS-1, 0, GHOSTS_COLORS[ghost-1], "RIGHT");
-    ghosts[ghost-1] = board[BOARD_ROWS-1][0];
+    // board[9][0] = null;
+    // board[BOARD_ROWS-1][0] = new Ghost(BOARD_ROWS-1, 0, GHOSTS_COLORS[ghost-1], "RIGHT");
+    // ghosts[ghost-1] = board[BOARD_ROWS-1][0];
+
+    let empty = findAllEmptyCell();
+    let pos = empty[Math.floor(Math.random() * empty.length)];
+
+    board[pos[0]][pos[1]] = new Pacman(pos[0],pos[1],pac_color);
+    pacman= board[pos[0]][pos[1]];
 
     var emptyCell=[0,0];
     while (food_remain > 0) {
@@ -911,10 +914,8 @@ function startAfterDisqualified() {
 
     let empty = findAllEmptyCell();
     let pos = empty[Math.floor(Math.random() * empty.length)];
-    pacman.x=pos[0];
-    pacman.y=pos[1];
-    board[pacman.x][pacman.y] = pacman;
-    // Draw();
+    board[pos[0]][pos[1]] = new Pacman(pos[0],pos[1],pac_color);
+    pacman= board[pos[0]][pos[1]];
 
     openinig_song.pause();
     openinig_song.currentTime=0;
@@ -1076,6 +1077,7 @@ function UpdatePosition() {
     for (let i = 0; i < ghosts.length; i++) {
         if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
             board[pacman.x][pacman.y] = null;
+            pacman = null;
             board[ghosts[i].x][ghosts[i].y] = ghosts[i];
             startAfterDisqualified();
             return;
@@ -1109,7 +1111,17 @@ function mainLoop() {
 }
 
 function isGameOver() {
-    return time_elapsed<0.05 || ball_the_pacman_eat === balls_on_the_board || lives === 0;
+
+    if(lives<=0)
+        return true;
+    for (let i = 0; i < BOARD_ROWS; i++) {
+        for (let j = 0; j < BOARD_COLUMNS; j++) {
+            if(board[i][j] instanceof Food)
+                return false;
+        }
+    }
+
+    return true;
 }
 
 function finishGame(){
@@ -1119,7 +1131,7 @@ function finishGame(){
     clearInterval(intervalGhost);
     clearInterval(bonusInterval);
     if(ball_the_pacman_eat == balls_on_the_board){
-        alert("Game Over You WIM!!");
+        alert("Game Over You WIN!!");
     }
     if(lives === 0 ){
         alert("You Lost!");
