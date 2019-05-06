@@ -8,12 +8,13 @@ var start_time;
 var time_elapsed;
 var GAME_TIME=60;
 var interval;
-var mainLoop_intervalTime=100;
+var mainLoop_intervalTime=150;
 var intervalGhost;
-var ghostUpdate_intervalTime=300;
+var ghostUpdate_intervalTime=400;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var countDownInterval;
+var isDisqulofiedInterval;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
@@ -865,6 +866,7 @@ function Start() {
     }
     console.log("start state");
     console.log(board);
+    isDisqulofiedInterval = setInterval(isDisqulified,1);
     interval = setInterval(mainLoop, mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
     bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
@@ -1052,6 +1054,7 @@ function UpdatePosition() {
     //     startAfterDisqualified();
     //     return;
     // }
+
     if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
         ball_the_pacman_eat++;
@@ -1076,14 +1079,14 @@ function UpdatePosition() {
         eating_sound.currentTime = 0;
         eating_sound.play();
     }
-    for (let i = 0; i < ghosts.length; i++) {
-        if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
-            board[pacman.x][pacman.y] = null;
-            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
-            startAfterDisqualified();
-            return;
-        }
-    }
+    // for (let i = 0; i < ghosts.length; i++) {
+    //     if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
+    //         board[pacman.x][pacman.y] = null;
+    //         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+    //         startAfterDisqualified();
+    //         return;
+    //     }
+    // }
 
     board[pacman.x][pacman.y] = pacman;
 
@@ -1093,13 +1096,6 @@ function UpdatePosition() {
     if (score >= 20 && time_elapsed <= 10) {
         pacman.color = "green";
     }
-    if (score === 5000) {
-        window.clearInterval(interval);
-        window.alert("Game completed");
-    }
-    // else {
-    //     Draw();
-    // }
 }
 
 
@@ -1268,4 +1264,17 @@ function bonusUpdate() {
 function countDown() {
     GAME_TIME--;
 
+}
+
+function isDisqulified() {
+
+    for (let i = 0; i < ghosts.length; i++) {
+        // if (ghosts[i].x === pacman.x && ghosts[i].y === pacman.y) {
+            if(ghosts[i].x === pacman.x && ghosts[i].y === pacman.y){
+            board[pacman.x][pacman.y] = null;
+            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+            startAfterDisqualified();
+            return true;
+        }
+    }
 }
