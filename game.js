@@ -640,7 +640,10 @@ function Start() {
         board[i] = new Array();
         //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
         for (var j = 0; j < BOARD_COLUMNS; j++) {
-            if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) || (i === 6 && j === 1) || (i === 6 && j === 2)) {
+            if ((i === 3 && j === 3) || (i === 3 && j === 4) || (i === 3 && j === 5) ||
+                (i === 6 && j === 1) || (i === 6 && j === 2) ||
+                (i === 10 && j === 4) || (i === 10 && j === 5)||(i === 10 && j === 6) || (i === 10 && j === 7)
+            ) {
                 board[i][j] = new Wall(i, j);
             }
             else if (i%9 === 0 && j%(BOARD_COLUMNS-1) === 0 && ghost<GHOSTS_NUM) {
@@ -927,12 +930,12 @@ function UpdatePosition() {
 
 
 function mainLoop() {
-    if(isGameOver()){
-        finishGame();
-    }else {
+    // if(isGameOver()){
+    //     finishGame();
+    // }else {
         Draw();
         UpdatePosition();
-    }
+  // }
 }
 
 function isGameOver() {
@@ -954,8 +957,8 @@ function ghostUpdate() {
         var ghostY = ghosts[i].y;
         board[ghostX][ghostY]=before[i];
         var move = getPossibaleMoves(ghosts[i]);
-        // var x = getMove(i,move)[Math.floor(Math.random() * move.length)];
-        var x = move[Math.floor(Math.random() * move.length)];
+        var y = getMove(i,move);
+        var x = y[Math.floor(Math.random() * y.length)];
         if (x === "Up") {
             ghosts[i].y--;
             ghosts[i].dir = "UP"
@@ -987,81 +990,65 @@ function getPossibaleMoves(Obj) {
     if(  (posY - 1) > 0  && !(board[posX][posY - 1] instanceof Wall) && !(board[posX][posY - 1] instanceof Ghost)) {
         ans.push("Up");
     }
-    if(  (posY + 1) < 9  && !(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) )  {
+    if(  (posY + 1) < (BOARD_COLUMNS-1)  && !(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) )  {
         ans.push("Down");
     }
     if(  (posX - 1) > 0  && !(board[posX-1][posY] instanceof Wall) && !(board[posX-1][posY] instanceof Ghost) ) {
         ans.push("Left");
     }
-    if(  (posX + 1) < 9  && !(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) ){
+    if(  (posX + 1) < (BOARD_ROWS-1)  && !(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) ){
         ans.push("Right");
     }
     return ans;
 }
 
 function getMove(ghost_index,moves) {
-//     var targetX = pacman.x;
-//     var targetY = pacman.y;
-//     var ghostX = ghosts[ghost_index].x;
-//     var ghostY = ghosts[ghost_index].y;
-//     var ans = [];
-//
-//     moveY = (targetY - ghostY > 0);//true- down false up /no vertical move
-//     moveX = (targetX - ghostX > 0); // true - right false - left / no horizantal move
-//     verticalMove = (targetY - ghostY === 0);// need to go left or righr
-//     horizMove = (targetX - ghostX === 0); // need to go up or down
-//
-//     if (moveX) {
-//         if ((ghostX + 1 <= 9) && !(board[ghostX + 1][ghostY] instanceof Wall)) {
-//             ans.push("right");
-//         } else if (moveY) {
-//             ans.push("Down");
-//         } else {
-//             ans.push("Up");
-//         }
-//     } else {
-//         if ((ghostX - 1 >= 0) && !(board[ghostX - 1][ghostY] instanceof Wall)) {
-//             ans.push("left");
-//         } else if (moveY) {
-//             ans.push("Down");
-//         } else {
-//             ans.push("Up");
-//
-//         }
-//     }
-//         return ans;
-//
-//         // //if the ghost is above pavman
-//         // if (targetY - ghostY > 0) {
-//         //     if (moves.includes("Down")) {
-//         //         ans.push("Down");
-//         //         // if the ghost left to the pacman
-//         //     }if (targetX - ghostX > 0) {
-//         //         if (moves.includes("Right")) {
-//         //             ans.push("Right");
-//         //             //if the ghost is right to the pacman
-//         //         } else if (targetX - ghostX < 0) {
-//         //             ans.push("Left");
-//         //
-//         //         }
-//         //     }
-//         //
-//         //     // if the pacman is above the ghost
-//         // } else if (targetY - ghostY < 0) {
-//         //     if (moves.includes("Up")) {
-//         //         ans.push("Up");
-//         //
-//         //     }if (targetX - ghostX > 0) {
-//         //         if (moves.includes("Right")) {
-//         //             ans.push("Right");
-//         //             //if the ghost is right to the pacman
-//         //         } else if (targetX - ghostX < 0) {
-//         //             ans.push("Left");
-//         //         }
-//         //     }
-//         // }
-//         // return ans;
+    var targetX = pacman.x;
+    var targetY = pacman.y;
+    var ghostX = ghosts[ghost_index].x;
+    var ghostY = ghosts[ghost_index].y;
+    var ans = [];
+
+    if(targetX-ghostX > 0) {
+        if ( moves.includes("Right") ) {
+            ans.push("Right");
+        }else if (moves.includes("Down")) {
+            ans.push("Down");
+        }else if ( moves.includes("Right")){
+            ans.push("Right");
+        }
+    }else if ( targetX - ghostX < 0){
+        if(moves.includes("Left")){
+            ans.push("Left");
+        }else if (moves.includes("Down")){
+            ans.push("Down");
+        }else if (moves.includes("Up")){
+            ans.push("Up");
+        }
+    }
+
+    if ( targetY - ghostY > 0 ){
+        if (moves.includes("Down")){
+            ans.push("Down");
+        }else if ( moves.includes("Right") ){
+            ans.push("Right");
+        }else if ( moves.includes("Left") ){
+            ans.push("Left");
+        }
+
+    }else if ( targetY - ghostY < 0){
+        if ( moves.includes("Up") ) {
+            ans.push("Up");
+        }else if ( moves.includes("Right") ){
+            ans.push("Right");
+        }else if ( moves.includes("Left") ){
+            ans.push("Left");
+        }
+    }
+
+    return ans;
 }
+
 
 function bonusUpdate() {
     var move = getPossibaleMoves(bonus);
