@@ -10,7 +10,7 @@ var GAME_TIME=60;
 var interval;
 var mainLoop_intervalTime=150;
 var intervalGhost;
-var ghostUpdate_intervalTime=350;
+var ghostUpdate_intervalTime=2500;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var GHOSTS_NUM = 3;
@@ -455,9 +455,9 @@ function setUpListener() {
         showOnly("signup");
     })
 
-    document.getElementById("login").addEventListener('click', () => {
-        showOnly("login");
-    })
+    // document.getElementById("login").addEventListener('click', () => {
+    //     showOnly("login");
+    // })
     document.getElementById("login_btn").addEventListener('click', () => {
         showOnly("login");
     })
@@ -765,7 +765,7 @@ function Start() {
     lives = 3;
     pac_color = "yellow";
     var cnt = BOARD_ROWS * BOARD_COLUMNS;
-    var food_remain = 80;
+    var food_remain = BALLS_NUM;
     var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
     var sum = foodSizes[0]+foodSizes[1]+foodSizes[2];
     if(sum<food_remain)
@@ -1107,7 +1107,7 @@ function finishGame(){
     clearInterval(intervalGhost);
     clearInterval(bonusInterval);
     if(ball_the_pacman_eat == balls_on_the_board){
-        console.log("OK");
+        alert("Game Over You WIM!!");
     }
     if(lives === 0 ){
         alert("You Lost!");
