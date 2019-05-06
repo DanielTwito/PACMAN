@@ -760,8 +760,8 @@ function clearAllTextFiealds(){
 
 function Start() {
     openinig_song.play();
-    ball_the_pacman_eat=0;
-    balls_on_the_board=0;
+    // ball_the_pacman_eat=0;
+    // balls_on_the_board=0;
     board = new Array();
     score = 0;
     lives = 3;
@@ -771,7 +771,6 @@ function Start() {
     var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
     var sum = foodSizes[0]+foodSizes[1]+foodSizes[2];
     foodSizes[0]+= food_remain - sum;
-    var pacman_remain = 1;
     var ghost = 0;
     start_time = new Date();
     function fillFood(i, j) {
@@ -824,9 +823,6 @@ function Start() {
             }
         }
     }
-    // board[9][0] = null;
-    // board[BOARD_ROWS-1][0] = new Ghost(BOARD_ROWS-1, 0, GHOSTS_COLORS[ghost-1], "RIGHT");
-    // ghosts[ghost-1] = board[BOARD_ROWS-1][0];
 
     let empty = findAllEmptyCell();
     let pos = empty[Math.floor(Math.random() * empty.length)];
@@ -866,6 +862,8 @@ function Start() {
                 balls_on_the_board++;
         }
     }
+    console.log("start state");
+    console.log(board);
     interval = setInterval(mainLoop, mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
     bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
@@ -1103,6 +1101,7 @@ function UpdatePosition() {
 
 function mainLoop() {
     if(isGameOver()){
+        Draw();
         finishGame();
     }else {
         Draw();
@@ -1130,18 +1129,18 @@ function finishGame(){
     clearInterval(interval);
     clearInterval(intervalGhost);
     clearInterval(bonusInterval);
-    if(ball_the_pacman_eat == balls_on_the_board){
-        alert("Game Over You WIN!!");
-    }
-    if(lives === 0 ){
+    if(lives === 0 ) {
         alert("You Lost!");
-    }else if ( time_elapsed <0.05){
+    } else if ( time_elapsed <0.05){
         if(score<150){
            alert("You can do better then " + score+" points!");
         }else{
             alert("We have a Winner!!!" );
         }
 
+    }
+    else{
+        alert("Game Over You WIN!!");
     }
 
 }
