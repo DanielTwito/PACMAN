@@ -18,6 +18,7 @@ var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
 var before = [];
 var ball_the_pacman_eat=0;
+var balls_on_the_board=0;
 var BALLS_NUM=0;
 var beforeBonus = null;
 var BOARD_ROWS = 15;
@@ -850,7 +851,7 @@ function Start() {
     for (let i = 0; i < BOARD_ROWS; i++) {
         for (let j = 0; j < BOARD_COLUMNS; j++) {
             if(board[i][j] instanceof Food)
-                BALLS_NUM++;
+                balls_on_the_board++;
         }
     }
     interval = setInterval(mainLoop, mainLoop_intervalTime);
@@ -865,11 +866,11 @@ function startAfterDisqualified() {
     score = score-10;
     lives--;
     pac_color = pac_color;
-    // for (var i = 0; i < GHOSTS_NUM; i++) {
-    //     var ghostX = ghosts[i].x;
-    //     var ghostY = ghosts[i].y;
-    //     board[ghostX][ghostY] = before[i];
-    // }
+    for (var i = 0; i < GHOSTS_NUM; i++) {
+        var ghostX = ghosts[i].x;
+        var ghostY = ghosts[i].y;
+        board[ghostX][ghostY] = before[i];
+    }
     clearInterval(interval);
     clearInterval(intervalGhost);
     Draw();
@@ -877,7 +878,6 @@ function startAfterDisqualified() {
     ghosts=[];
     var ghost=0;
     for (var i = 0; i < BOARD_ROWS; i++) {
-        //put obstacles in (i=3,j=3) and (i=3,j=4) and (i=3,j=5), (i=6,j=1) and (i=6,j=2)
         for (var j = 0; j < BOARD_COLUMNS; j++) {
             if (i % (BOARD_ROWS-1) === 0 &&  j%(BOARD_COLUMNS-1) === 0 && ghost < GHOSTS_NUM) {
                 board[i][j] = new Ghost(i, j, GHOSTS_COLORS[ghost], "RIGHT");
@@ -1079,16 +1079,16 @@ function UpdatePosition() {
 
 
 function mainLoop() {
-    // if(isGameOver()){
-    //     finishGame();
-    // }else {
+    if(isGameOver()){
+        finishGame();
+    }else {
         Draw();
         UpdatePosition();
-  // }
+  }
 }
 
 function isGameOver() {
-    return time_elapsed<0.05 || ball_the_pacman_eat === BALLS_NUM || lives === 0;
+    return time_elapsed<0.05 || ball_the_pacman_eat === balls_on_the_board || lives === 0;
 }
 
 function finishGame(){
@@ -1097,6 +1097,19 @@ function finishGame(){
     clearInterval(interval);
     clearInterval(intervalGhost);
     clearInterval(bonusInterval);
+    if(ball_the_pacman_eat == balls_on_the_board){
+        console.log("OK");
+    }
+    if(lives === 0 ){
+        alert("You Lost!");
+    }else if ( time_elapsed <0.05){
+        if(score<150){
+           alert("You can do better then " + score+" points!");
+        }else{
+            alert("We have a Winner!!!" );
+        }
+
+    }
     alert("Game Over");
 
 }
@@ -1136,16 +1149,16 @@ function getPossibaleMoves(Obj) {
     var posX = Obj.x;
     var posY = Obj.y;
     var ans =[];
-    if(  (posY - 1) > 0  && !(board[posX][posY - 1] instanceof Wall) && !(board[posX][posY - 1] instanceof Ghost)) {
+    if(  (posY - 1) >= 0  && !(board[posX][posY - 1] instanceof Wall) && !(board[posX][posY - 1] instanceof Ghost)) {
         ans.push("Up");
     }
-    if(  (posY + 1) < (BOARD_COLUMNS-1)  && !(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) )  {
+    if(  (posY + 1) <= (BOARD_COLUMNS-1)  && !(board[posX][posY + 1] instanceof Wall) && !(board[posX][posY + 1] instanceof Ghost) )  {
         ans.push("Down");
     }
-    if(  (posX - 1) > 0  && !(board[posX-1][posY] instanceof Wall) && !(board[posX-1][posY] instanceof Ghost) ) {
+    if(  (posX - 1) >= 0  && !(board[posX-1][posY] instanceof Wall) && !(board[posX-1][posY] instanceof Ghost) ) {
         ans.push("Left");
     }
-    if(  (posX + 1) < (BOARD_ROWS-1)  && !(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) ){
+    if(  (posX + 1) <= (BOARD_ROWS-1)  && !(board[posX+1][posY] instanceof Wall) && !(board[posX+1][posY] instanceof Ghost) ){
         ans.push("Right");
     }
     return ans;
