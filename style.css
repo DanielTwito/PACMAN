@@ -432,3 +432,15 @@ input[type=text]:placeholder {
     font-size: 24px;
     font-style: italic;
 }
+#restart{
+    font-size: 14px;
+    float: left;
+    color: #007fff;
+    background-color: white;
+    font-weight: bold;
+    padding: 0 0 0 0;
+    width: 100px;
+    height: 60px;
+    align-content: center;
+}
+

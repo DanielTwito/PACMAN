@@ -10,7 +10,7 @@ var GAME_TIME=60;
 var interval;
 var mainLoop_intervalTime=150;
 var intervalGhost;
-var ghostUpdate_intervalTime=400;
+var ghostUpdate_intervalTime=350;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var GHOSTS_NUM = 3;
@@ -499,7 +499,16 @@ function setUpListener() {
         this.currentTime = 0;
         this.play();
     }, false);
+
+    document.getElementById("restart").addEventListener('click',()=>{
+        clearInterval(interval);
+        clearInterval(intervalGhost);
+        clearInterval(bonusInterval);
+        updateSettings();
+        Start();
+    })
 }
+
 
 function updateSettings() {
 
@@ -1024,12 +1033,12 @@ function UpdatePosition() {
             break;
     }
 
-    if(board[pacman.x][pacman.y] instanceof Ghost){
-
-        startAfterDisqualified();
-        return;
-    }
-    else if (board[pacman.x][pacman.y] instanceof Food) {
+    // if(board[pacman.x][pacman.y] instanceof Ghost){
+    //
+    //     startAfterDisqualified();
+    //     return;
+    // }
+    if (board[pacman.x][pacman.y] instanceof Food) {
         score+=board[pacman.x][pacman.y].getScore();
         ball_the_pacman_eat++;
         eating_sound.currentTime=0;
@@ -1053,13 +1062,13 @@ function UpdatePosition() {
         eating_sound.currentTime = 0;
         eating_sound.play();
     }
-    for (let i = 0; i < ghosts.length; i++) {
-        if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
-            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
-            startAfterDisqualified();
-            return;
-        }
-    }
+    // for (let i = 0; i < ghosts.length; i++) {
+    //     if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
+    //         board[ghosts[i].x][ghosts[i].y] = ghosts[i];
+    //         startAfterDisqualified();
+    //         return;
+    //     }
+    // }
 
     board[pacman.x][pacman.y] = pacman;
 
@@ -1110,7 +1119,6 @@ function finishGame(){
         }
 
     }
-    alert("Game Over");
 
 }
 function ghostUpdate() {
