@@ -8,9 +8,9 @@ var start_time;
 var time_elapsed;
 var GAME_TIME=60;
 var interval;
-var mainLoop_intervalTime=150;
+var mainLoop_intervalTime=100;
 var intervalGhost;
-var ghostUpdate_intervalTime=2500;
+var ghostUpdate_intervalTime=300;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var countDownInterval;
@@ -868,6 +868,7 @@ function Start() {
     interval = setInterval(mainLoop, mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
     bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
+    countDownInterval = setInterval(countDown, 1100);
 }
 
 function boardClean() {
@@ -924,6 +925,7 @@ function startAfterDisqualified() {
     keysDown = {};
     interval = setInterval(mainLoop,mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate,ghostUpdate_intervalTime);
+    countDownInterval = setInterval(countDown,1100);
 
 }
 
@@ -1112,9 +1114,8 @@ function mainLoop() {
 }
 
 function isGameOver() {
-    return GAME_TIME === -1 || ball_the_pacman_eat === balls_on_the_board || lives === 0;
 
-    if(lives<=0)
+    if(lives<=0 || GAME_TIME === -1 )
         return true;
     for (let i = 0; i < BOARD_ROWS; i++) {
         for (let j = 0; j < BOARD_COLUMNS; j++) {
