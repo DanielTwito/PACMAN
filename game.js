@@ -13,6 +13,7 @@ var intervalGhost;
 var ghostUpdate_intervalTime=2500;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
+var countDownInterval;
 var GHOSTS_NUM = 3;
 var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
@@ -866,6 +867,7 @@ function Start() {
     interval = setInterval(mainLoop, mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate, ghostUpdate_intervalTime);
     bonusInterval = setInterval(bonusUpdate, bonusInterval_intervalTime);
+    countDownInterval = setInterval(countDown, 1100);
 }
 
 function boardClean() {
@@ -885,6 +887,7 @@ function boardClean() {
 function startAfterDisqualified() {
     clearInterval(interval);
     clearInterval(intervalGhost);
+    clearTimeout(countDownInterval);
     score = score-10;
     lives--;
     pac_color = pac_color;
@@ -923,6 +926,7 @@ function startAfterDisqualified() {
     keysDown = {};
     interval = setInterval(mainLoop,mainLoop_intervalTime);
     intervalGhost = setInterval(ghostUpdate,ghostUpdate_intervalTime);
+    countDownInterval = setInterval(countDown,1100);
 
 }
 
@@ -979,7 +983,7 @@ function Draw() {
     for (var i = 0; i < BOARD_ROWS; i++) {
         for (var j = 0; j < BOARD_COLUMNS; j++) {
             if(board[i][j] instanceof Wall) {
-                    board[i][j].Draw(context);
+                board[i][j].Draw(context);
             }
         }
     }
@@ -994,7 +998,7 @@ function Draw() {
 
 
     for (var i = 0; i < ghosts.length; i++) {
-                ghosts[i].Draw(context);
+        ghosts[i].Draw(context);
     }
     if(bonus!==null) {
         board[bonus.x][bonus.y].Draw(context);
@@ -1008,7 +1012,7 @@ function Draw() {
     if(pacman !== null)
         if(board[pacman.x][pacman.y]!==null) {
             board[pacman.x][pacman.y].Draw(context);
-    }
+        }
 }
 
 
@@ -1020,8 +1024,8 @@ function UpdatePosition() {
     switch (x) {
         case 1:
             if (pacman.y > 0 && !(board[pacman.x][pacman.y - 1] instanceof Wall)) {
-            pacman.y--;
-            pacman.direction = "Up";
+                pacman.y--;
+                pacman.direction = "Up";
             }
             break;
         case 2:
@@ -1085,7 +1089,8 @@ function UpdatePosition() {
     board[pacman.x][pacman.y] = pacman;
 
     var currentTime = new Date();
-    time_elapsed = GAME_TIME - ((currentTime - start_time) / 1000);
+    // time_elapsed = GAME_TIME - ((currentTime - start_time) / 1000);
+    time_elapsed = GAME_TIME;
     if (score >= 20 && time_elapsed <= 10) {
         pacman.color = "green";
     }
@@ -1105,11 +1110,11 @@ function mainLoop() {
     }else {
         Draw();
         UpdatePosition();
-  }
+    }
 }
 
 function isGameOver() {
-    return time_elapsed<0.05 || ball_the_pacman_eat === balls_on_the_board || lives === 0;
+    return GAME_TIME === -1 || ball_the_pacman_eat === balls_on_the_board || lives === 0;
 }
 
 function finishGame(){
@@ -1125,7 +1130,7 @@ function finishGame(){
         alert("You Lost!");
     }else if ( time_elapsed <0.05){
         if(score<150){
-           alert("You can do better then " + score+" points!");
+            alert("You can do better then " + score+" points!");
         }else{
             alert("We have a Winner!!!" );
         }
@@ -1240,12 +1245,17 @@ function bonusUpdate() {
     if (x === "Up") {
         bonus.y--;
     } else if (x === "Down") {
-       bonus.y++;
+        bonus.y++;
     } else if (x === "Left") {
-       bonus.x--;
+        bonus.x--;
     } else if (x === "Right") {
         bonus.x++;
     }
     beforeBonus=board[bonus.x][bonus.y]
     board[bonus.x][bonus.y] = bonus;
+}
+
+function countDown() {
+    GAME_TIME--;
+
 }
