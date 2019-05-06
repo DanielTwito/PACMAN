@@ -6,11 +6,11 @@ var pac_color;
 var pacman;
 var start_time;
 var time_elapsed;
-var gameTime=60;
+var GAME_TIME=60;
 var interval;
 var mainLoop_intervalTime=150;
 var intervalGhost;
-var ghostUpdate_intervalTime=600;
+var ghostUpdate_intervalTime=400;
 var bonusInterval;
 var bonusInterval_intervalTime=500;
 var GHOSTS_NUM = 3;
@@ -18,10 +18,14 @@ var GHOSTS_COLORS = ["green", "red", "blue"];
 var ghosts = [];
 var before = [];
 var ball_the_pacman_eat=0;
-var ball_on_the_board=0;
+var BALLS_NUM=0;
 var beforeBonus = null;
 var BOARD_ROWS = 15;
 var BOARD_COLUMNS = 10;
+var UP = "ArrowUp";
+var DOWN = "ArrowDown";
+var RIGHT = "ArrowRight";
+var LEFT = "ArrowLeft";
 
 // var before = null ;
 var before = [] ;
@@ -31,6 +35,16 @@ var eating_sound = document.getElementById( "eating_sound" );
 var bonus_img = document.getElementById( "bonus" );
 var clock_img = document.getElementById( "clock" );
 var extra_life_img = document.getElementById( "extra_life" );
+let bigBall = document.getElementById("big_color");
+let mediumBall = document.getElementById("medium_color");
+let smallBall = document.getElementById("small_color");
+let ghostsNum = document.getElementById("ghostNumber");
+let ballsNum = document.getElementById("ballNumber");
+let gameTime = document.getElementById("game_time");
+let up = document.getElementById("keyUp");
+let down=document.getElementById("keyDown");
+let right = document.getElementById("keyRight");
+let left = document.getElementById("keyLeft");
 
 
 class User{
@@ -449,20 +463,19 @@ function setUpListener() {
     document.getElementById("signup_btn").addEventListener('click', () => {
         showOnly("signup");
     })
-    // document.getElementById("login_submit").addEventListener('click', () => {
-    //     showOnly("gameBoard");
-    // })
 
     document.getElementById("login_submit").addEventListener('click', () => {
         if(checkUserDetails()){
             showOnly("settings");
             document.getElementById("save_settings").addEventListener('click',()=>{
-                updateSettings();
-                showOnly("gameBoard");
+                if(validateSettingsFields()){
+                    updateSettings();
+                    showOnly("gameBoard");
+                }
             });
             document.getElementById("random_settings").addEventListener('click',()=>{
                 randomSettings();
-                showOnly("gameBoard");
+                // showOnly("gameBoard");
             });
 
         }
@@ -472,6 +485,15 @@ function setUpListener() {
         if(validateFields())
             addUser();
     })
+    // document.getElementById("save_settings").addEventListener('click', () => {
+    //     if(validateFields())
+    //         addUser();
+    // })
+    // document.getElementById("random_settings").addEventListener('click', () => {
+    //     if(validateFields())
+    //         addUser();
+    // })
+
     openinig_song.addEventListener('ended', function () {
         this.currentTime = 0;
         this.play();
@@ -480,11 +502,133 @@ function setUpListener() {
 
 function updateSettings() {
 
+    UP = up.value;
+    DOWN = down.value;
+    RIGHT = right.value;
+    LEFT = left.value;
+    GHOSTS_NUM = ghostsNum.value;
+    BALLS_NUM = ballsNum.value;
+    GAME_TIME = gameTime.value;
+    food["big"].color = bigBall.value ;
+    food["medium"].color = mediumBall.value;
+    food["small"].color = smallBall.value;
 }
 
 function randomSettings() {
 
+    up.value= "ArrowUp";
+    down.value = "ArrowDown";
+    right.value = "ArrowRight";
+    left.value = "ArrowLeft";
+    bigBall.value = getRandomColor();
+    mediumBall.value = getRandomColor();
+    smallBall.value = getRandomColor();
+    ghostsNum.value = getRandomInt(1,3);
+    ballsNum.value = getRandomInt(50,90);
+    gameTime.value = getRandomInt(60,150);
 }
+
+
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function validateSettingsFields(){
+
+
+
+    var nameReg = /^[A-Za-z]+$/;
+    var numberReg =  /^[0-9]+$/;
+
+    var inputVal = new Array(up.value,down.value,left.value,right.value,ghostsNum.value,ballsNum.value,gameTime.value);
+
+    var inputMessage = new Array("UP key", "DOWN key", "LEFT key", "RIGHT key", "Num of Ghosts","Num of Balls","Game Time");
+    var flag=true;
+    $('.error').hide();
+    //check up input
+    if(inputVal[0] == ""){
+        up.value = 'Enter your '  + inputMessage[0];
+        flag=false;
+
+    }
+
+    //check down input
+    if(inputVal[1] == ""){
+        down.value = 'Enter your '  + inputMessage[1];
+        flag=false;
+    }
+
+    //check left input
+    if(inputVal[2] == ""){
+        left.value = 'Enter your '  + inputMessage[2];
+        flag=false;
+    }
+
+    //check right input
+    if(inputVal[3] == ""){
+        right.value = 'Enter your '  + inputMessage[3];
+        flag=false;
+    }
+
+    //check ghosts
+    if(inputVal[4] == ""){
+        ghostsNum.value = 'Enter '  + inputMessage[4];
+        flag=false;
+    }
+    else if(!numberReg.test(ghostsNum.value)){
+        ghostsNum.value='Please enter a number';
+        flag=false;
+    }
+    else if(ghostsNum.value < 1 || ghostsNum.value > 3){
+        ghostsNum.value='Please enter number between 1-3';
+        flag=false;
+    }
+
+    //check balls
+    if(inputVal[5] == ""){
+        ballsNum.value = 'Enter '  + inputMessage[5];
+        flag=false;
+    }
+    else if(!numberReg.test(ballsNum.value)){
+        ballsNum.value='Please enter a number';
+        flag=false;
+    }
+    else if(ballsNum.value < 50 || ballsNum.value > 90){
+        ballsNum.value='Please enter number between 50-90';
+        flag=false;
+    }
+
+    //check time
+    if(inputVal[6] == ""){
+        gameTime.value = 'Enter '  + inputMessage[6];
+        flag=false;
+    }
+    else if(!numberReg.test(gameTime.value)){
+        gameTime.value='Please enter a number';
+        flag=false;
+    }
+    else if(gameTime.value < 60){
+        gameTime.value='The minimum game time is 60 seconds';
+        flag=false;
+    }
+
+
+    return flag;
+
+}
+
 function validateFields() {
     var nameReg = /^[A-Za-z]+$/;
     var numberReg =  /^[0-9]+$/;
@@ -613,6 +757,9 @@ function Start() {
     var cnt = BOARD_ROWS * BOARD_COLUMNS;
     var food_remain = 80;
     var foodSizes = [0.6 * food_remain, 0.3 * food_remain, 0.1 * food_remain];
+    var sum = foodSizes[0]+foodSizes[1]+foodSizes[2];
+    if(sum<food_remain)
+        foodSizes[2]+= food_remain - sum;
     var pacman_remain = 1;
     var ghost = 0;
     start_time = new Date();
@@ -692,15 +839,15 @@ function Start() {
 
     keysDown = {};
     addEventListener("keydown", function (e) {
-        keysDown[e.code] = true;
+        keysDown[e.key] = true;
     }, false);
     addEventListener("keyup", function (e) {
-        keysDown[e.code] = false;
+        keysDown[e.key] = false;
     }, false);
     for (let i = 0; i < BOARD_ROWS; i++) {
         for (let j = 0; j < BOARD_COLUMNS; j++) {
             if(board[i][j] instanceof Food)
-                ball_on_the_board++;
+                BALLS_NUM++;
         }
     }
     interval = setInterval(mainLoop, mainLoop_intervalTime);
@@ -715,29 +862,15 @@ function startAfterDisqualified() {
     score = score-10;
     lives--;
     pac_color = pac_color;
-
-
-    for (var i = 0; i < GHOSTS_NUM; i++) {
-        var ghostX = ghosts[i].x;
-        var ghostY = ghosts[i].y;
-        board[ghostX][ghostY]=before[i];
-    }
-
-
-
+    // for (var i = 0; i < GHOSTS_NUM; i++) {
+    //     var ghostX = ghosts[i].x;
+    //     var ghostY = ghosts[i].y;
+    //     board[ghostX][ghostY] = before[i];
+    // }
+    clearInterval(interval);
+    clearInterval(intervalGhost);
     Draw();
-    let empty = findAllEmptyCell();
-    let pos = empty[Math.floor(Math.random() * empty.length)];
-    pacman.x=pos[0];
-    pacman.y=pos[1];
-
-
-    openinig_song.pause();
-    openinig_song.currentTime=0;
-    Draw();
-    console.log(board);
-    openinig_song.play();
-
+    alert(lives +" lives left! press enter to continue");
     ghosts=[];
     var ghost=0;
     for (var i = 0; i < BOARD_ROWS; i++) {
@@ -750,6 +883,20 @@ function startAfterDisqualified() {
             }
         }
     }
+
+
+    let empty = findAllEmptyCell();
+    let pos = empty[Math.floor(Math.random() * empty.length)];
+    pacman.x=pos[0];
+    pacman.y=pos[1];
+    board[pacman.x][pacman.y] = pacman;
+    // Draw();
+
+    openinig_song.pause();
+    openinig_song.currentTime=0;
+    // Draw();
+    console.log(board);
+    openinig_song.play();
     keysDown = {};
     alert(lives +" lives left! press enter to continue");
     interval = setInterval(mainLoop,mainLoop_intervalTime);
@@ -787,16 +934,16 @@ function findAllEmptyCell() {
  * @return {number}
  */
 function GetKeyPressed() {
-    if (keysDown['ArrowUp']) {
+    if (keysDown[UP]) {
         return 1;
     }
-    if (keysDown['ArrowDown']) {
+    if (keysDown[DOWN]) {
         return 2;
     }
-    if (keysDown['ArrowLeft']) {
+    if (keysDown[LEFT]) {
         return 3;
     }
-    if (keysDown['ArrowRight']) {
+    if (keysDown[RIGHT]) {
         return 4;
     }
 }
@@ -875,6 +1022,7 @@ function UpdatePosition() {
     }
 
     if(board[pacman.x][pacman.y] instanceof Ghost){
+
         startAfterDisqualified();
         return;
     }
@@ -887,7 +1035,7 @@ function UpdatePosition() {
 
     else if(board[pacman.x][pacman.y] instanceof Bonus) {
         if (board[pacman.x][pacman.y] === clock) {
-            gameTime = gameTime + 10;
+            GAME_TIME = GAME_TIME + 10;
             clock = null;
 
         }else if(board[pacman.x][pacman.y] === extra_life){
@@ -904,6 +1052,7 @@ function UpdatePosition() {
     }
     for (let i = 0; i < ghosts.length; i++) {
         if(board[ghosts[i].x][ghosts[i].y] instanceof Pacman){
+            board[ghosts[i].x][ghosts[i].y] = ghosts[i];
             startAfterDisqualified();
             return;
         }
@@ -912,7 +1061,7 @@ function UpdatePosition() {
     board[pacman.x][pacman.y] = pacman;
 
     var currentTime = new Date();
-    time_elapsed = gameTime - ((currentTime - start_time) / 1000);
+    time_elapsed = GAME_TIME - ((currentTime - start_time) / 1000);
     if (score >= 20 && time_elapsed <= 10) {
         pacman.color = "green";
     }
@@ -936,7 +1085,7 @@ function mainLoop() {
 }
 
 function isGameOver() {
-    return time_elapsed<0.05 || ball_the_pacman_eat === ball_on_the_board || lives === 0;
+    return time_elapsed<0.05 || ball_the_pacman_eat === BALLS_NUM || lives === 0;
 }
 
 function finishGame(){
