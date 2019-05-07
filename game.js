@@ -805,7 +805,7 @@ function Start() {
             ) {
                 board[i][j] = new Wall(i, j);
             }
-            else if (i%9 === 0 && j%(BOARD_COLUMNS-1) === 0 && ghost<GHOSTS_NUM) {
+            else if (i% (BOARD_ROWS-1) === 0 && j%(BOARD_COLUMNS-1) === 0 && ghost<GHOSTS_NUM) {
                 board[i][j] = new Ghost(i, j, GHOSTS_COLORS[ghost], "RIGHT");
                 ghosts[ghost] = board[i][j];
                 ghost++;
